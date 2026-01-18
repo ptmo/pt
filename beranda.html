@@ -1971,10 +1971,11 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
 
     <script type="module">
     // 1. Import Library (Pastikan internet lancar, atau gunakan VPN jika 404)
-    import { createAppKit } from 'https://esm.sh/@reown/appkit@1.6.5';
-    import { Ethers5Adapter } from 'https://esm.sh/@reown/appkit-adapter-ethers5@1.6.5';
-    import { base } from 'https://esm.sh/@reown/appkit/networks';
-
+    import { createAppKit } from 'https://cdn.jsdelivr.net/npm/@reown/appkit@1.6.5/+esm';
+    import { Ethers5Adapter } from 'https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-ethers5@1.6.5/+esm';
+    import { base } from 'https://cdn.jsdelivr.net/npm/@reown/appkit@1.6.5/networks/+esm';
+    import { ethers } from 'https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.esm.min.js';
+   
     // 2. Konfigurasi
     const projectId = 'f67f439f77eb6398f723672f2daf89c8';
     
