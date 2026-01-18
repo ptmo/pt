@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruang Pusaka - Profil Kolektor</title>
+    <link rel="icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+
+    <style>
+        /* --- STYLE PREMIUM (Tetap Sama) --- */
+        body { font-family: 'Poppins', sans-serif; background-color: #f6f9ff; color: #333; margin: 0; padding: 0; }
+        .navbar { background: white; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: 700; color: #7385a5; font-size: 18px; text-decoration: none; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; min-height: 80vh; }
+        
+        /* LOGIN WALL */
+        .login-wall { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; animation: fadeIn 0.5s ease; }
+        .lock-icon { font-size: 50px; color: #7385a5; margin-bottom: 20px; background: #e9f0ff; width: 100px; height: 100px; line-height: 100px; border-radius: 50%; box-shadow: 0 10px 30px rgba(115, 133, 165, 0.2); }
+        .btn-connect-big { background: linear-gradient(135deg, #7385a5, #5c6a84); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 25px; transition: 0.3s; box-shadow: 0 5px 15px rgba(115, 133, 165, 0.3); display: flex; align-items: center; gap: 10px; }
+        .btn-connect-big:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(115, 133, 165, 0.4); }
+
+        /* CONTENT */
+        #mainContent { display: none; }
+        
+        /* PROFILE CARD */
+        .profile-card { background: linear-gradient(135deg, #7385a5, #5c6a84); color: white; border-radius: 25px; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 20px; box-shadow: 0 10px 25px rgba(115, 133, 165, 0.4); position: relative; overflow: hidden; margin-bottom: 30px; text-align: center; }
+        .profile-card::before { content: ''; position: absolute; top: -50%; left: -20%; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        @media (min-width: 768px) { .profile-card { flex-direction: row; text-align: left; justify-content: space-between; } .profile-info-wrapper { display: flex; align-items: center; gap: 20px; } }
+        
+        .profile-avatar img { width: 80px; height: 80px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.3); object-fit: cover; background: #fff; }
+        .profile-details h2 { margin: 0; font-size: 13px; font-family: 'Courier New', monospace; letter-spacing: 0.5px; margin-bottom: 5px; }
+        .badges { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        @media (min-width: 768px) { .badges { justify-content: flex-start; } }
+        .badge { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+        
+        .btn-copy { background: rgba(255,255,255,0.9); color: #7385a5; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-copy:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .section-title { color: #7385a5; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-size: 18px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        
+        /* GRID SYSTEM */
+        .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .card-img { width: 100%; height: 180px; object-fit: cover; background: #eee; }
+        .card-body { padding: 12px; }
+        .card-title { font-size: 11px; font-weight: bold; color: #5c6a84; margin: 0; }
+        .card-id { font-size: 11px; color: #999; margin-bottom: 8px; display: block; }
+        .btn-detail { display: block; width: 100%; text-align: center; background: #e9f0ff; color: #7385a5; text-decoration: none; padding: 8px 0; border-radius: 8px; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-detail:hover { background: #7385a5; color: white; }
+        .owned-badge { position: absolute; top: 10px; right: 10px; background: #f1c40f; color: white; font-size: 6px; padding: 2px 4px; border-radius: 8px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 2; }
+        .state-box { text-align: center; padding: 50px 20px; color: #7385a5; }
+
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+        /* --- 3D HOLOGRAM CARD EFFECT --- */
+.wayang-card {
+    /* Setup 3D */
+    transition: transform 0.1s ease-out; /* Animasi halus */
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    will-change: transform;
+    position: relative;
+    z-index: 1;
+}
+
+/* Lapisan Kilau Hologram (Glare) */
+.wayang-card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    /* Gradient Pelangi Transparan */
+    background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.3) 40%,
+        rgba(255, 0, 150, 0.2) 45%, /* Pink Hologram */
+        rgba(0, 255, 255, 0.2) 50%, /* Cyan Hologram */
+        rgba(255, 255, 255, 0.3) 55%,
+        transparent 80%
+    );
+    opacity: 0; /* Hidden by default */
+    mix-blend-mode: overlay;
+    transition: opacity 0.3s;
+    pointer-events: none; /* Biar tetap bisa diklik */
+    border-radius: 15px;
+    z-index: 10;
+}
+
+/* Saat kartu aktif (Hover/Touch) */
+.wayang-card.active-3d::after {
+    opacity: 1;
+}
+
+        /* --- SEARCH CAPSULE STYLE (FIXED) --- */
+.search-capsule {
+    background: white;
+    border-radius: 50px;
+    /* Remove internal padding so the button can touch the edge */
+    padding: 0; 
+    display: flex;
+    align-items: center;
+    gap: 0; /* Remove gap, handle spacing via padding on elements */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 2px solid #7385a5;
+    margin-bottom: 25px;
+    transition: 0.3s;
+    height: 50px; /* Set fixed height for consistency */
+    overflow: hidden; /* Ensures button stays inside border radius */
+}
+
+.search-capsule:focus-within {
+    box-shadow: 0 8px 25px rgba(115, 133, 165, 0.15);
+    border-color: #dbe4f3;
+    transform: translateY(-2px);
+}
+
+.search-icon {
+    color: #b0b8c4;
+    font-size: 16px;
+    padding-left: 20px; /* Add padding here instead of container */
+}
+
+.search-capsule input {
+    border: none;
+    outline: none;
+    flex: 1; 
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    color: #5c6a84;
+    background: transparent;
+    height: 100%; /* Fill height */
+    padding-left: 15px; /* Space between icon and text */
+}
+
+.search-capsule input::placeholder {
+    color: #b0b8c4;
+}
+
+.btn-search {
+    background: #7385a5;
+    color: white;
+    border: none;
+    height: 100%; 
+    
+    /* UPDATE: Padding dikanan-kiri dikurangi biar jadi agak kotak/bulat di ujung */
+    padding: 0 20px; 
+    
+    /* UPDATE: Ukuran font untuk icon dibesarkan sedikit biar jelas */
+    font-size: 16px; 
+    
+    border-radius: 0 50px 50px 0;
+    cursor: pointer;
+    transition: 0.3s;
+    
+    /* Flexbox wajib biar icon di tengah */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-search:hover {
+    background: #5c6a84;
+    border: 2px solid #5c6a84;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .search-capsule {
+        /* On mobile, keep height but adjust padding if needed */
+    }
+    .search-icon { display: none; }
+    .search-capsule input { padding-left: 20px; }
+    .btn-search { padding: 0 20px; }
+        }
+
+        .footer { background: #fff; padding: 15px; text-align: center; margin-top: auto; border-top: 1px solid #eee; }
+        .copyright { color: #888; font-size: 13px; }
+
+        #btn-connect {
+            background: transparent; color: #7385a5; border: 2px solid #7385a5; 
+            padding: 10px 25px; cursor: pointer; font-family: 'Rubik', sans-serif; 
+            font-weight: bold; border-radius: 30px; transition: 0.3s; font-size: 14px;
+        }
+        #btn-connect:hover { background: #f6f9ff; color: #7385a5; border: 2px solid #7385a5; }
+        #btn-connect.connected { background: #abb6c9; color: #fff; border-color: #7385a5; cursor: default; }
+        @media (max-width: 600px) {
+            .navbar { padding: 15px 20px; }
+            .nav-brand { font-size: 0.9em; }
+            #btn-connect { padding: 8px 15px; font-size: 12px; }
+            h1 { font-size: 2em; }
+                 }
+
+        /* 1. Overlay Transparan (Hanya untuk deteksi klik luar) */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: transparent; /* Tidak ada warna/blur */
+    backdrop-filter: none;
+    z-index: 9998;
+    display: none;
+    /* Ubah dari flex ke block agar kita bisa atur posisi absolute manual */
+    display: none; 
+}
+
+.modal-overlay.active {
+    display: block; 
+}
+
+/* 2. Kartu Modal (Menjadi Dropdown) */
+.modal-card {
+    position: absolute; /* Kunci posisi */
+    
+    /* ATUR POSISI DISINI SESUAI TINGGI NAVBAR ANDA */
+    top: 70px;  /* Jarak dari atas (sesuaikan dengan tinggi navbar) */
+    right: 20px; /* Jarak dari kanan (supaya lurus dengan tombol connect) */
+    
+    width: 300px; /* Lebar fix agar rapi */
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px; /* Radius lebih kecil ala dropdown */
+    
+    /* Shadow Premium Soft */
+    box-shadow: 0 5px 30px rgba(0,0,0,0.15); 
+    border: 1px solid rgba(0,0,0,0.05); /* Border tipis halus */
+    
+    text-align: center;
+    font-family: 'Rubik', sans-serif;
+    
+    /* Animasi Muncul dari atas */
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+    transform-origin: top right; /* Animasi mulai dari pojok kanan atas */
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* State Aktif */
+.modal-overlay.active .modal-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* (Opsional) Segitiga Kecil Penunjuk ke Atas (Arrow) */
+.modal-card::before {
+    content: "";
+    position: absolute;
+    top: -6px; /* Muncul di atas kotak */
+    right: 20px; /* Posisi sejajar tombol */
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    transform: rotate(45deg); /* Putar jadi wajik */
+    border-left: 1px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    box-shadow: -2px -2px 5px rgba(0,0,0,0.02);
+}
+    
+/* Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+.modal-header h3 { margin: 0; font-size: 18px; color: #333; }
+.close-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #888; }
+
+/* Status Badge & Dot Kelap Kelip */
+.modal-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.status-badge {
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-label { color: #888; }
+    
+.pulse-dot {
+    width: 8px; height: 8px;
+    background-color: #27ae60;
+    border-radius: 50%;
+    box-shadow: 0 0 0 rgba(39, 174, 96, 0.4);
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(39, 174, 96, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+}
+
+/* Saldo */
+.modal-balance { margin-bottom: 20px; }
+.balance-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+.balance-amount { font-size: 24px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
+
+/* Address Box (Copyable) */
+.modal-address-box {
+    background: #f1f2f6;
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: 25px;
+}
+.modal-address-box:hover { border-color: #3498db; background: #eaf6ff; }
+.address-text { font-family: monospace; font-size: 14px; color: #555; }
+.copy-icon { color: #3498db; }
+
+/* Tombol Aksi */
+.modal-actions { display: flex; flex-direction: column; gap: 10px; }
+.action-btn {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.1s;
+}
+.action-btn:active { transform: scale(0.98); }
+.action-btn.primary { background: #7385a5; color: white; }
+.action-btn.danger { background: #fee; color: #e74c3c; border: 1px solid
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index" class="logo"><i class="fas fa-arrow-left"></i>Profile Kolektor</a>
+        <div class="nav-right">
+            <button id="btn-connect" onclick="handleConnectButton()">
+                <i class="fas fa-wallet"></i> Hubungkan
+            </button>
+        </div>
+    </nav>
+
+    <div id="loginSection">
+        <div class="lock-icon"><i class="fas fa-shield-alt"></i></div>
+        <h2 style="color:#5c6a84; margin-bottom:5px;">Akses Ruang Koleksi</h2>
+        <p style="color:#8898aa; max-width: 350px;">Hubungkan dompet Web3 Anda untuk membuka profil.</p>
+        <button onclick="handleConnectButton()" class="btn-connect-big" id="btnLogin">
+            <i class="fas fa-wallet"></i> Buka Akses
+        </button>
+    </div>
+
+    <div id="mainContent" class="container" style="display:none;">
+        <div class="search-capsule">
+            <div class="search-icon"><i class="fas fa-search"></i></div>
+            <input type="text" id="inputAddress" placeholder="Cari Alamat Wallet Kolektor" onkeypress="handleEnter(event)">
+            <button onclick="cariProfile()" class="btn-search"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="profile-card">
+            <div class="profile-info-wrapper">
+                <div class="profile-avatar" id="avatarContainer" onclick="openNftPicker()">
+                    <img src="" id="avatarImg" alt="Avatar">
+                </div>
+                <div class="profile-details">
+                    <h2 id="displayAddress">Loading...</h2>
+                    <div class="badges">
+                        <span class="badge"><i class="fas fa-crown"></i> Owner</span>
+                        <span class="badge" style="background:rgba(255,255,255,0.3);"><i class="fas fa-cube"></i> <span id="totalItems">0</span> Koleksi</span>
+                    </div>
+                </div>
+            </div>
+            <button onclick="copyAddress()" class="btn-copy"><i class="far fa-copy"></i> <span id="btnCopyText">Salin</span></button>
+        </div>
+
+        <h3 class="section-title"><i class="fas fa-box-open"></i> Koleksi/Karya</h3>
+
+        <div id="loading" class="state-box">
+            <i class="fas fa-circle-notch fa-spin" style="font-size: 30px; margin-bottom: 10px;"></i>
+            <p>Membaca data Blockchain...</p>
+        </div>
+        <div id="emptyState" class="state-box" style="display: none;">
+            <i class="fas fa-ghost" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
+            <p>Belum ada Koleksi Wayang.</p>
+        </div>
+
+        <div id="collectionContainer" class="collection-grid"></div>
+    </div>
+
+    <div id="walletModal" class="modal-overlay" onclick="closeWalletModal(event)">
+    <div class="modal-card">
+        
+        <div class="modal-header">
+            <h3><i class="fas fa-wallet" style="color:#7385a5;"></i> Wallet Info</h3>
+            <button class="close-btn" onclick="toggleWalletModal()"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="modal-status">
+            <span class="status-label">Status</span>
+            <div class="status-badge">
+                <span class="pulse-dot"></span> Terhubung
+            </div>
+        </div>
+
+        <div class="modal-balance">
+            <div class="balance-label">Total Saldo</div>
+            <div class="balance-amount" id="modalBalance">
+                <i class="fas fa-spinner fa-spin"></i> Loading...
+            </div>
+        </div>
+
+        <div class="modal-address-box" onclick="copyAddress()">
+            <div class="address-text">
+                <span id="modalFullAddress" style="display:none;"></span> <span id="modalShortAddress">0x...</span>
+            </div>
+            <i class="far fa-copy copy-icon"></i>
+        </div>
+
+        <div class="modal-actions">
+            <button class="action-btn primary" onclick="window.location.href='/profile'">
+                <i class="fas fa-user-circle"></i> Buka Profil Saya
+            </button>
+            
+            <button class="action-btn danger" onclick="disconnectWallet()">
+                <i class="fas fa-sign-out-alt"></i> Putuskan Koneksi
+            </button>
+        </div>
+        
+    </div>
+    </div>
+
+    <div id="nftPickerModal" class="modal-overlay" onclick="closeModalOutside(event, 'nftPickerModal')">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fas fa-image" style="color:#7385a5;"></i> Pilih Foto Profil</h3>
+                <button class="close-btn" onclick="toggleModal('nftPickerModal')"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div id="pickerLoading" class="state-box" style="padding: 20px;">
+                <i class="fas fa-circle-notch fa-spin"></i> Memuat koleksi Anda...
+            </div>
+            <div id="pickerEmpty" class="state-box" style="padding: 20px; display:none;">
+                <p>Anda belum memiliki NFT Wayang.</p>
+            </div>
+
+            <div id="pickerGrid" class="picker-grid">
+                </div>
+             <div style="text-align:center; margin-top:10px; font-size:11px; color:#999;">
+                Klik gambar untuk menjadikannya foto profil.
+            </div>
+        </div>
+    </div>
+
+    <div onclick="openKhodamModal()" style="position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px; background: #8e44ad; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4); z-index: 999; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+    <i class="fas fa-ghost" style="font-size: 20px;"></i>
+</div>
+
+<div id="khodamModal" class="modal-overlay" onclick="if(event.target.id==='khodamModal') toggleModal('khodamModal')">
+    <div class="modal-card" style="background: linear-gradient(135deg, #2c3e50, #000); color: #fff; border: 1px solid #8e44ad;">
+        <div style="text-align: right;">
+            <button onclick="toggleModal('khodamModal')" style="background:none; border:none; color:#ccc; font-size:20px; cursor:pointer;">&times;</button>
+        </div>
+        
+        <div style="text-align: center; padding-bottom: 20px;">
+            <h3 style="color: #9b59b6; margin-top: 0;"><i class="fas fa-magic"></i> Cek Khodam Wayang</h3>
+            <p style="font-size: 12px; color: #bbb;">Siapa sosok wayang yang menjaga wallet Anda?</p>
+            
+            <div id="khodamResult" style="margin-top: 20px; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <i class="fas fa-fingerprint" style="font-size: 40px; color: #555; margin-bottom: 10px;"></i>
+                <span style="font-size: 13px; color: #777;">Klik tombol di bawah untuk menerawang...</span>
+            </div>
+
+            <button onclick="revealKhodam()" class="action-btn" style="background: #8e44ad; color: white; margin-top: 20px; border: none;">
+                <i class="fas fa-search-location"></i> Terawang Wallet Saya
+            </button>
+        </div>
+    </div>
+</div>
+
+    <footer class="footer">
+        <p class="copyright">&copy; <span id="year"></span> Powered By <strong>Putramas Official</strong></p>
+    </footer>
+
+    <script>
+    // --- KONFIGURASI ---
+    const BASE_SEPOLIA_ID = '0x14a34'; 
+    const BASE_SEPOLIA_CONFIG = {
+        chainId: BASE_SEPOLIA_ID,
+        chainName: 'Base Sepolia Testnet',
+        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+        rpcUrls: ['https://sepolia.base.org'],
+        blockExplorerUrls: ['https://sepolia-explorer.base.org']
+    };
+    const CONTRACT_ADDRESS = "0x29f19E566380DC680357d30fbfFc7EB7DD02947B"; 
+    
+    // ABI Minimal
+    const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newFee","type":"uint256"}],"name":"FeeUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"address","name":"user","type":"address"}],"name":"Liked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint8","name":"star","type":"uint8"},{"indexed":false,"internalType":"string","name":"ulasan","type":"string"}],"name":"Reviewed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"string","name":"nama","type":"string"},{"indexed":false,"internalType":"string","name":"golongan","type":"string"}],"name":"WayangLahir","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"string","name":"nama","type":"string"},{"indexed":false,"internalType":"string","name":"golongan","type":"string"},{"indexed":false,"internalType":"bool","name":"isOfficial","type":"bool"},{"indexed":false,"internalType":"address","name":"creator","type":"address"}],"name":"WayangLahir","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"string","name":"namaBaru","type":"string"},{"indexed":false,"internalType":"string","name":"uriBaru","type":"string"}],"name":"WayangUpdate","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_penerima","type":"address"},{"internalType":"string","name":"_tokenURI","type":"string"},{"internalType":"string","name":"_nama","type":"string"},{"internalType":"string","name":"_golongan","type":"string"},{"internalType":"string","name":"_gaya","type":"string"}],"name":"arsipWayang","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"dalang","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdrawETH","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getAverageRating","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"golongan","type":"string"}],"name":"getIdsByGolongan","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getInfoWayang","outputs":[{"components":[{"internalType":"string","name":"nama","type":"string"},{"internalType":"string","name":"golongan","type":"string"},{"internalType":"string","name":"gaya","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isOfficial","type":"bool"},{"internalType":"address","name":"creator","type":"address"}],"internalType":"struct WayangArsipPutramasOfficial.WayangInfo","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getReviews","outputs":[{"components":[{"internalType":"address","name":"reviewer","type":"address"},{"internalType":"uint8","name":"bintang","type":"uint8"},{"internalType":"string","name":"ulasan","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"internalType":"struct WayangArsipPutramasOfficial.Review[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"hasLiked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"hasReviewed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"kasihLike","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"uint8","name":"_bintang","type":"uint8"},{"internalType":"string","name":"_ulasanPilihan","type":"string"}],"name":"kasihUlasan","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"publicMintFee","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"},{"internalType":"string","name":"_namaBaru","type":"string"},{"internalType":"string","name":"_uriBaru","type":"string"}],"name":"revisiDataWayang","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newFee","type":"uint256"}],"name":"setMintFee","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalLikes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"_tokenURI","type":"string"},{"internalType":"string","name":"_nama","type":"string"},{"internalType":"string","name":"_golongan","type":"string"},{"internalType":"string","name":"_gaya","type":"string"}],"name":"uploadPublik","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"walletOfOwner","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"wayangRegistry","outputs":[{"internalType":"string","name":"nama","type":"string"},{"internalType":"string","name":"golongan","type":"string"},{"internalType":"string","name":"gaya","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isOfficial","type":"bool"},{"internalType":"address","name":"creator","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"wayangReviews","outputs":[{"internalType":"address","name":"reviewer","type":"address"},{"internalType":"uint8","name":"bintang","type":"uint8"},{"internalType":"string","name":"ulasan","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"}];
+        
+    let provider, signer;
+    let currentAddress = null; // Profil yang SEDANG DILIHAT
+    let viewerAddress = null;  // Dompet KITA (User Login)
+
+    // ============================================================
+    // 1. FUNGSI UTAMA & GATEKEEPER
+    // ============================================================
+    async function initApp() {
+        console.log("App Initializing...");
+        
+        // Cek status login wallet di browser (Metamask)
+        if (window.ethereum) {
+            try {
+                // Gunakan provider Web3
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                const accounts = await provider.listAccounts();
+                
+                if (accounts.length > 0) {
+                    // User sudah login di Metamask
+                    viewerAddress = accounts[0];
+                    updateBtnUI(true);
+                    updateModalData(viewerAddress); // Isi modal di background
+                }
+            } catch (e) {
+                console.log("Mode Visitor / Wallet Locked");
+            }
+        }
+
+        // Tentukan profil mana yang ditampilkan
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetParam = urlParams.get('address');
+        const cachedWallet = localStorage.getItem('userWallet');
+
+        if (targetParam) {
+            // Mode Intip (Ada parameter ?address=...)
+            loadProfile(targetParam); 
+        } else if (viewerAddress) {
+            // Mode Login Metamask (Otomatis buka profil sendiri)
+            loadProfile(viewerAddress); 
+        } else if (cachedWallet) {
+            // Mode Cache (Pernah login sebelumnya)
+            loadProfile(cachedWallet); 
+            // Verifikasi diam-diam apakah cache valid
+            if(window.ethereum) verifyCache(cachedWallet);
+        } else {
+            // Belum Login sama sekali -> Tampilkan Login Wall
+            console.log("Menunggu User Login...");
+            document.getElementById("loginSection").style.display = "flex";
+            document.getElementById("mainContent").style.display = "none";
+        }
+        
+        document.getElementById("year").innerText = new Date().getFullYear();
+    }
+
+    async function verifyCache(cached) {
+        try {
+            const accounts = await provider.listAccounts();
+            // Jika akun Metamask beda dengan cache, logout paksa
+            if (accounts.length === 0 || accounts[0].toLowerCase() !== cached.toLowerCase()) {
+                localStorage.removeItem('userWallet'); 
+                window.location.reload();
+            }
+        } catch(e) {}
+    }
+
+    // ============================================================
+    // 2. LOGIKA WALLET (Connect, Switch, Modal Data)
+    // ============================================================
+    
+    // Fungsi wrapper untuk tombol (Navbar & Wall)
+    async function handleConnectButton() {
+        const btn = document.getElementById("btn-connect");
+        
+        // Jika di Navbar sudah 'Connected', buka modal
+        if (btn && btn.classList.contains("connected")) {
+            toggleModal('walletModal');
+            if(viewerAddress) updateModalData(viewerAddress);
+            return;
+        }
+        
+        // Jika belum, lakukan proses koneksi
+        await connectWallet();
+    }
+
+    async function connectWallet() {
+        if (!window.ethereum) return alert("Metamask tidak ditemukan! Silakan install.");
+        
+        const btn = document.getElementById("btn-connect");
+        const btnBig = document.getElementById("btnLogin");
+        
+        // Efek Loading
+        if(btn) btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i>`;
+        if(btnBig) btnBig.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Menghubungkan...`;
+
+        try {
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            
+            // 1. Request Akun
+            await provider.send("eth_requestAccounts", []);
+            
+            // 2. Switch Network
+            await switchNetwork();
+            
+            // 3. Ambil Address
+            signer = provider.getSigner();
+            const address = await signer.getAddress();
+
+            // 4. Simpan Sesi
+            localStorage.setItem('userWallet', address);
+            viewerAddress = address;
+
+            // 5. Update UI & Load Data
+            await updateModalData(address);
+            updateBtnUI(true);
+            loadProfile(address); // Buka halaman profil
+
+        } catch (err) {
+            console.error(err);
+            alert("Koneksi Gagal: " + err.message);
+            // Reset tombol
+            updateBtnUI(false);
+            if(btnBig) btnBig.innerHTML = `<i class="fas fa-wallet"></i> Buka Akses`;
+        }
+    }
+
+    async function switchNetwork() {
+        try { 
+            await window.ethereum.request({ 
+                method: 'wallet_switchEthereumChain', 
+                params: [{ chainId: BASE_SEPOLIA_ID }] 
+            }); 
+        } catch (err) {
+            // Error 4902: Chain belum ditambahkan
+            if (err.code === 4902) {
+                await window.ethereum.request({ 
+                    method: 'wallet_addEthereumChain', 
+                    params: [BASE_SEPOLIA_CONFIG] 
+                });
+            } else {
+                throw err;
+            }
+        }
+    }
+
+    async function updateModalData(addr) {
+        if(!addr || !provider) return;
+        try {
+            // Isi Address
+            if(document.getElementById("modalFullAddress")) {
+                document.getElementById("modalFullAddress").innerText = addr;
+                document.getElementById("modalShortAddress").innerText = addr.substring(0, 10) + "..." + addr.substring(35);
+            }
+            
+            // Isi Saldo
+            const balance = await provider.getBalance(addr);
+            if(document.getElementById("modalBalance")) {
+                document.getElementById("modalBalance").innerText = parseFloat(ethers.utils.formatEther(balance)).toFixed(4) + " ETH";
+            }
+        } catch (e) {
+            console.error("Gagal update modal data", e);
+        }
+    }
+
+    function updateBtnUI(isConnected) {
+        const btn = document.getElementById("btn-connect");
+        if(btn) {
+            if(isConnected) {
+                btn.innerHTML = `<i class="fas fa-wallet"></i> Info Profile`;
+                btn.classList.add("connected");
+            } else {
+                btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;
+                btn.classList.remove("connected");
+            }
+        }
+    }
+
+    function disconnectWallet() {
+        localStorage.removeItem('userWallet');
+        viewerAddress = null; 
+        signer = null;
+        toggleModal('walletModal');
+        window.location.reload();
+    }
+
+    // ============================================================
+    // 3. LOGIKA PROFIL & NFT PICKER
+    // ============================================================
+    function loadProfile(addr) {
+        currentAddress = addr;
+        
+        // Sembunyikan Login Wall, Tampilkan Konten Utama
+        const loginSec = document.getElementById("loginSection");
+        const mainSec = document.getElementById("mainContent");
+        
+        if(loginSec) loginSec.style.display = "none";
+        if(mainSec) mainSec.style.display = "block";
+        
+        updateProfileHeader(addr);
+        loadCollectionGrid(addr);
+    }
+
+    async function updateProfileHeader(addr) {
+        // 1. Tampilkan Address Pendek
+        const short = addr.substring(0, 6) + "..." + addr.substring(addr.length - 4);
+        document.getElementById("displayAddress").innerText = short;
+
+        const avatarImg = document.getElementById("avatarImg");
+        const avatarContainer = document.getElementById("avatarContainer");
+
+        // Set Loading State
+        avatarImg.style.opacity = "0.5";
+
+        try {
+            // 2. LOGIKA SAKTI: Ambil PFP dari Blockchain Langsung (NFT Terbaru)
+            // Gunakan provider global atau buat baru jika belum ada
+            const readProvider = provider || new ethers.providers.JsonRpcProvider("https://sepolia.base.org");
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, readProvider);
+
+            // Cek token apa saja yang dimiliki alamat ini
+            const tokenIds = await contract.walletOfOwner(addr);
+
+            if (tokenIds.length > 0) {
+                // --- KASUS A: PUNYA KOLEKSI ---
+                // Ambil Token ID terakhir (paling baru didapat)
+                const latestId = tokenIds[tokenIds.length - 1]; 
+                
+                // Ambil Metadata URI
+                const uri = await contract.tokenURI(latestId);
+                
+                // Fetch Gambar dari IPFS
+                // (Kita bypass fetch metadata JSON biar cepat, asumsi kita tahu formatnya)
+                // Tapi amannya fetch JSON dulu:
+                const httpUri = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+                const res = await fetch(httpUri);
+                const meta = await res.json();
+                
+                // Tampilkan Gambar NFT Asli!
+                const finalImg = meta.image.replace("ipfs://", "https://ipfs.io/ipfs/");
+                avatarImg.src = finalImg;
+                
+            } else {
+                // --- KASUS B: TIDAK PUNYA KOLEKSI ---
+                // Pakai Identicon standar
+                avatarImg.src = `https://api.dicebear.com/7.x/identicon/svg?seed=${addr}&backgroundColor=7385a5`;
+                avatarContainer.style.border = "none";
+            }
+
+        } catch (err) {
+            console.error("Gagal load PFP:", err);
+            // Fallback kalau error jaringan
+            avatarImg.src = `https://api.dicebear.com/7.x/identicon/svg?seed=${addr}&backgroundColor=7385a5`;
+        } finally {
+            avatarImg.style.opacity = "1";
+        }
+    }
+
+    // --- FUNGSI BUKA MODAL PICKER ---
+    async function openNftPicker() {
+        // Hanya izinkan jika login dan melihat profil sendiri
+        if (!viewerAddress || viewerAddress.toLowerCase() !== currentAddress.toLowerCase()) {
+            return; 
+        }
+        
+        toggleModal('nftPickerModal');
+        
+        const grid = document.getElementById("pickerGrid");
+        const loading = document.getElementById("pickerLoading");
+        const empty = document.getElementById("pickerEmpty");
+        
+        grid.innerHTML = "";
+        loading.style.display = "block";
+        empty.style.display = "none";
+
+        try {
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+            const tokenIds = await contract.walletOfOwner(viewerAddress);
+
+            if (tokenIds.length === 0) {
+                loading.style.display = "none";
+                empty.style.display = "block";
+                return;
+            }
+
+            // Ambil 20 item terbaru saja untuk picker
+            const recentIds = tokenIds.slice().reverse().slice(0, 20);
+            
+            // Fetch parallel
+            const promises = recentIds.map(async (id) => {
+                try {
+                    const uri = await contract.tokenURI(id);
+                    const url = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+                    const res = await fetch(url);
+                    const json = await res.json();
+                    const imgUrl = json.image.replace("ipfs://", "https://ipfs.io/ipfs/");
+                    return imgUrl;
+                } catch (e) { return null; }
+            });
+
+            const images = await Promise.all(promises);
+            loading.style.display = "none";
+
+            images.forEach(imgUrl => {
+                if (imgUrl) {
+                    const item = document.createElement('div');
+                    item.className = 'picker-item';
+                    item.innerHTML = `<img src="${imgUrl}" loading="lazy">`;
+                    item.onclick = () => selectPfp(imgUrl);
+                    grid.appendChild(item);
+                }
+            });
+
+        } catch (err) {
+            console.error("Picker Error:", err);
+            loading.innerHTML = "Gagal memuat koleksi.";
+        }
+    }
+
+    function selectPfp(imgUrl) {
+        if(!viewerAddress) return;
+        localStorage.setItem(`pfp_${viewerAddress.toLowerCase()}`, imgUrl);
+        document.getElementById("avatarImg").src = imgUrl;
+        toggleModal('nftPickerModal');
+    }
+
+    // ============================================================
+    // 4. LOAD COLLECTION GRID (MAIN PAGE)
+    // ============================================================
+    async function loadCollectionGrid(targetAddr) {
+        const container = document.getElementById("collectionContainer");
+        const loading = document.getElementById("loading");
+        const empty = document.getElementById("emptyState");
+        
+        container.innerHTML = ""; 
+        loading.style.display = 'block'; 
+        empty.style.display = 'none';
+
+        // Fallback provider jika belum connect (Mode Intip)
+        const readProvider = provider || new ethers.providers.JsonRpcProvider("https://sepolia.base.org");
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, readProvider);
+
+        try {
+            const tokenIds = await contract.walletOfOwner(targetAddr);
+            document.getElementById("totalItems").innerText = tokenIds.length;
+
+            if (tokenIds.length === 0) {
+                loading.style.display = 'none'; 
+                empty.style.display = 'block'; 
+                return;
+            }
+
+            const recentIds = tokenIds.slice().reverse().slice(0, 50);
+            
+            const promises = recentIds.map(async (id) => {
+                try {
+                    const uri = await contract.tokenURI(id);
+                    const url = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+                    const res = await fetch(url);
+                    const json = await res.json();
+                    let img = json.image ? json.image.replace("ipfs://", "https://ipfs.io/ipfs/") : "img/placeholder.jpg";
+                    return { id: id.toString(), name: json.name, image: img };
+                } catch (e) { return null; }
+            });
+
+            const results = await Promise.all(promises);
+            loading.style.display = 'none';
+            results.forEach(item => { if (item) renderCard(item, container); });
+
+        } catch (err) {
+            console.error(err);
+            loading.innerHTML = `<p style="color:red">Data Blockchain Gagal Dimuat.</p>`;
+        }
+    }
+
+    function renderCard(item, container) {
+    // 1. Logika Badge & Tombol (TETAP)
+    const isMyProfile = viewerAddress && currentAddress && (viewerAddress.toLowerCase() === currentAddress.toLowerCase());
+    
+    const badge = isMyProfile ? 
+        `<span class="owned-badge" style="background:#f1c40f;"><i class="fas fa-check-circle"></i> Milik Anda</span>` : 
+        `<span class="owned-badge" style="background:#2ecc71;"><i class="fas fa-shield-alt"></i> Terverifikasi</span>`;
+    
+    const editBtn = isMyProfile ? 
+        `<button onclick="window.location.href='revisi?id=${item.id}'" style="border:none; background:#d35400; color:white; border-radius:5px; font-size:10px; padding:2px 8px; cursor:pointer;"><i class="fas fa-edit"></i> Revisi</button>` : ``;
+
+    // 2. HTML Kartu dengan Efek 3D (YANG BARU)
+    const html = `
+        <div class="wayang-card" 
+             onmousemove="handleTilt(event, this)" 
+             onmouseleave="resetTilt(this)"
+             ontouchmove="handleTilt(event.touches[0], this)"
+             ontouchend="resetTilt(this)">
+             
+            <div style="position:relative; pointer-events:none;"> 
+                ${badge} 
+                <img src="${item.image}" class="card-img" loading="lazy">
+            </div>
+            
+            <div class="card-body">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span class="card-id">ID #${item.id}</span>
+                    ${editBtn}
+                </div>
+                <h4 class="card-title">${item.name || 'Wayang #'+item.id}</h4>
+                <div style="margin-top:10px;">
+                    <a href="detail?id=${item.id}" class="btn-detail" style="position:relative; z-index:20;">Lihat Sertifikat</a>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 3. Masukkan ke Container
+    container.insertAdjacentHTML('beforeend', html);
+    }
+
+    // ============================================================
+    // 5. HELPER FUNCTIONS
+    // ============================================================
+    function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal.classList.contains("active")) {
+            modal.classList.remove("active"); setTimeout(() => { modal.style.display = "none"; }, 200);
+        } else {
+            modal.style.display = "flex"; setTimeout(() => { modal.classList.add("active"); }, 10);
+        }
+    }
+    function closeModalOutside(e, modalId) { if (e.target.id === modalId) toggleModal(modalId); }
+
+    function copyAddressModal() { copyText(document.getElementById("modalFullAddress").innerText); }
+    function copyAddress() { copyText(currentAddress); }
+    function copyText(text) {
+        if(!text) return;
+        navigator.clipboard.writeText(text).then(() => alert("Alamat Disalin!"));
+    }
+
+    function cariProfile() {
+        const val = document.getElementById("inputAddress").value.trim();
+        if (val) window.location.href = `?address=${val}`;
+    }
+    function handleEnter(e) { if (e.key === "Enter") cariProfile(); }
+
+    // --- DATABASE KHODAM WAYANG (LUCU-LUCUAN) ---
+const khodamList = [
+    { name: "Semar", trait: "Bijaksana, tapi suka kentut sembarangan saat hening.", icon: "fa-smile-beam" },
+    { name: "Gareng", trait: "Suka bingung sendiri, kaki pincang tapi rejeki kenceng.", icon: "fa-walking" },
+    { name: "Petruk", trait: "Panjang akal, usil, kalau ketawa bikin tetangga emosi.", icon: "fa-grin-tongue-wink" },
+    { name: "Bagong", trait: "Polos, jujur, tapi omongannya suka bikin sakit hati.", icon: "fa-meh-rolling-eyes" },
+    { name: "Arjuna", trait: "Playboy cap kapak, tebar pesona sana sini, dompet sering kosong.", icon: "fa-heart" },
+    { name: "Bima", trait: "Gak banyak omong, sekali pukul kelar, hobi makan besar.", icon: "fa-fist-raised" },
+    { name: "Yudistira", trait: "Gak bisa bohong, sering dimanfaatin teman buat bayar gorengan.", icon: "fa-hand-holding-heart" },
+    { name: "Duryudana", trait: "Harta melimpah tapi pelitnya minta ampun.", icon: "fa-crown" },
+    { name: "Sengkuni", trait: "Hati-hati! Suka ngomporin orang di grup WhatsApp.", icon: "fa-mask" },
+    { name: "Rahwana", trait: "Bucin akut! Rela hancurin dunia demi ayang.", icon: "fa-skull" },
+    { name: "Cakil", trait: "Suka cari masalah, gigi offside, tapi gigih berjuang.", icon: "fa-teeth" },
+    { name: "Hanoman", trait: "Lincah, setia, tapi suka lupa naruh kunci motor.", icon: "fa-cloud" },
+    { name: "Gatotkaca", trait: "Otot kawat tulang besi, tapi takut sama cicilan.", icon: "fa-dumbbell" },
+    { name: "Srikandi", trait: "Cewek tangguh, galak, suami takut istri.", icon: "fa-venus" }
+];
+
+function openKhodamModal() {
+    toggleModal('khodamModal');
+    // Reset tampilan
+    document.getElementById("khodamResult").innerHTML = `
+        <i class="fas fa-fingerprint" style="font-size: 40px; color: #555; margin-bottom: 10px;"></i>
+        <span style="font-size: 13px; color: #777;">Siap menerawang energi wallet Anda...</span>
+    `;
+}
+
+function revealKhodam() {
+    // 1. Cek Koneksi Wallet
+    const currentWallet = localStorage.getItem('userWallet');
+    
+    if (!currentWallet) {
+        alert("Hubungkan wallet dulu untuk dicek khodamnya!");
+        return;
+    }
+
+    const resDiv = document.getElementById("khodamResult");
+    
+    // 2. Efek Loading
+    resDiv.innerHTML = `<i class="fas fa-spinner fa-spin" style="font-size: 30px; color: #9b59b6;"></i><br><span style="color:#bbb; font-size:12px; margin-top:10px;">Menerawang energi hari ini...</span>`;
+
+    setTimeout(() => {
+        // 3. AMBIL TANGGAL HARI INI (Format: "Mon Jan 04 2026")
+        // Ini kuncinya: Setiap hari string tanggal berubah
+        const todayStr = new Date().toDateString();
+        
+        // 4. GABUNGKAN WALLET + TANGGAL JADI SATU "SEED"
+        const seed = currentWallet + todayStr;
+
+        // 5. Algoritma Hashing (Hitung angka unik dari seed tersebut)
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+            hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        
+        // Agar hasilnya positif
+        hash = Math.abs(hash);
+        
+        // 6. Pilih Khodam
+        const index = hash % khodamList.length;
+        const result = khodamList[index];
+
+        // 7. Tampilkan Hasil
+        resDiv.innerHTML = `
+            <div style="animation: fadeIn 0.5s; text-align:center;">
+                <div style="font-size:10px; color:#aaa; margin-bottom:5px;">EDISI ${todayStr.toUpperCase()}</div>
+                <i class="fas ${result.icon}" style="font-size: 50px; color: #f1c40f; margin-bottom: 10px; text-shadow: 0 0 10px #f1c40f;"></i>
+                <h2 style="margin: 5px 0; color: #fff;">${result.name}</h2>
+                <p style="font-size: 14px; color: #ddd; font-style: italic; max-width: 250px; margin: 0 auto;">"${result.trait}"</p>
+            </div>
+        `;
+    }, 2000); 
+}
+
+    // --- LOGIKA 3D TILT ---
+function handleTilt(e, card) {
+    const rect = card.getBoundingClientRect();
+    
+    // Hitung posisi mouse/jari relatif terhadap kartu
+    const x = e.clientX - rect.left; 
+    const y = e.clientY - rect.top;
+    
+    // Hitung titik tengah
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // Kalkulasi Rotasi (Maksimal 15 derajat)
+    const rotateX = ((y - centerY) / centerY) * -15; 
+    const rotateY = ((x - centerX) / centerX) * 15;
+
+    // Terapkan Transformasi
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+    
+    // Geser Kilau Hologram (Opsional, biar makin real)
+    card.style.backgroundPosition = `${x/5 + y/5}%`;
+    
+    // Tambah class untuk memunculkan kilau
+    card.classList.add('active-3d');
+}
+
+function resetTilt(card) {
+    // Balik ke posisi semula
+    card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`;
+    card.classList.remove('active-3d');
+}
+
+    // Init App
+    window.addEventListener('DOMContentLoaded', initApp);
+    
+    // Listener Metamask
+    if(window.ethereum) {
+        window.ethereum.on('accountsChanged', () => { 
+            localStorage.removeItem('userWallet'); 
+            window.location.reload(); 
+        });
+    }
+            </script>
+</body>
+</html>

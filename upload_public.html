@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Publik - Galeri Nusantara</title>
+    <meta name="description" content="Kunjungi Koleksi Wayang Kulit Nusantara Di Galeri Digital Putramas Official">
+    <meta name="keywords" content="
+Wayang,
+Wayang Kulit,
+Wayang Kulit Indonesia,
+Wayang Indonesia,
+Wayang Nusantara,
+
+Wayang Kulit Gagrak Cirebon,
+Wayang Gagrak Cirebon,
+Wayang Cirebon,
+Wayang Kulit Cirebon,
+
+Wayang Kulit Jawa,
+Wayang Kulit Jawa Tengah,
+Wayang Kulit Jawa Timur,
+Wayang Kulit Jawa Barat,
+
+Wayang Kulit Gagrak Yogyakarta,
+Wayang Kulit Gagrak Surakarta,
+Wayang Kulit Gagrak Solo,
+Wayang Kulit Gagrak Banyumas,
+Wayang Kulit Gagrak Kedu,
+Wayang Kulit Gagrak Mataram,
+
+Wayang Kulit Purwa,
+Wayang Kulit Parwa,
+Wayang Kulit Bali,
+Wayang Bali,
+
+Wayang Kulit Sasak,
+Wayang Sasak Lombok,
+
+Wayang Kulit Madura,
+Wayang Madura,
+
+Wayang Kulit Banjar,
+Wayang Banjar Kalimantan,
+
+Wayang Kulit Betawi,
+Wayang Betawi,
+
+Wayang Kulit Sunda,
+Wayang Golek,
+Wayang Golek Sunda,
+        
+Wayang Kulit Pesisiran,
+Wayang Kulit Pantura,
+        
+Wayang Ramayana,
+Wayang Mahabharata,
+Tokoh Wayang,
+Arsip Wayang,
+Galeri Wayang,
+Koleksi Wayang Kulit
+">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://putramas.web.id">
+
+    <meta property="og:title" content="Putramas Official | Digital Galeri Wayang Nusantara>
+    <meta property="og:description" content="Kunjungi Koleksi Wayang Kulit Nusantara Di Galeri Digital Putramas Official.">
+    <meta property="og:url" content="https://putramas.web.id">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://putramas.web.id/img/og.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Putramas Official | Digital Galeri Wayang Nusantara">
+    <meta name="twitter:description" content="Kunjungi Koleksi Wayang Kulit Nusantara Di Galeri Digital Putramas Official.">
+    <meta name="twitter:image" content="https://putramas.web.id/img/og.png">
+    
+    <link rel="icon" href="/img/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/img/favicon.svg">
+    <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/img/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/img/icon-512.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+    body { 
+        font-family: 'Rubik', sans-serif; 
+        background: #f6f9ff;
+        padding: 0;
+        margin: 0;
+        color: #666; 
+    }
+
+    .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: #fff;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 15px; }
+        
+        .nav-logo {
+            width: 45px; height: 45px;
+            border-radius: 50%;
+            border: 2px solid #7385a5;
+            object-fit: cover;
+        }
+    
+    .container { 
+        width: 95%;
+        max-width: 800px; 
+        margin: 40px auto;
+        background: #f6f9ff; 
+        padding: 40px; 
+        border-radius: 12px; 
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    #btn-connect {
+            background: transparent; color: #7385a5; border: 2px solid #7385a5; 
+            padding: 10px 25px; cursor: pointer; font-family: 'Rubik', sans-serif; 
+            font-weight: bold; border-radius: 30px; transition: 0.3s; font-size: 14px;
+        }
+        #btn-connect:hover { background: #f6f9ff; color: #7385a5; border: 2px solid #7385a5; }
+        #btn-connect.connected { background: #7385a5; color: #fff; border-color: #a6b4cd; cursor: default; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #f1f1f1; padding-bottom: 15px; }
+    h1, h2, h3 { color: #7385a5; }
+    
+    label { font-weight: 600; font-size: 14px; display: block; margin-top: 20px; color: #555; }
+    input, select, textarea { 
+        width: 100%; padding: 12px; margin-top: 8px; 
+        border: 1px solid #ddd; border-radius: 6px; 
+        font-size: 13px; transition: 0.3s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #27ae60; outline: none; }
+    
+    fieldset {
+    border: 1px solid rgba(115, 133, 165, 0.35);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    background: #f6f9ff;
+
+    box-shadow:
+    0 8px 22px rgba(115, 133, 165, 0.16),
+    0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+    legend { font-weight: bold; color: #7385a5; padding: 0 10px; }
+    
+    .btn-action { 
+        background-color: transparent; color: #7385a5; padding: 15px; 
+        border: 2px solid #7385a5; width: 50%; cursor: pointer; font-size: 12px; 
+        border-radius: 25px; margin-top: 20px; font-weight: bold; 
+        box-shadow: 0 4px 10px rgba(115, 133, 165, 0.28); align-items: center; margin-left: auto; margin-right: auto; display: block;
+    }
+
+.btn-action:hover {
+    background-color: #f6f9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(115, 133, 165, 0.35);
+    }
+        
+    .footer {
+            background: #fff;
+            padding: 20px 20px;
+            margin-top: 25px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .social-icons { margin-bottom: 10px; }
+        
+        .social-link {
+            display: inline-flex; justify-content: center; align-items: center;
+            width: 35px; height: 35px; margin: 0 07px;
+            border-radius: 50%; background: #7385a5; color: #fff;
+            font-size: 15px; transition: all 0.3s ease; border: 1.5px solid #7385a5;
+            text-decoration: none;
+        }
+        .social-link:hover {
+            background: #fff; color: #7385a5;
+            transform: translateY(-5px); box-shadow: 0 0 15px #7385a5;
+        }
+
+        .copyright { color: #888; font-size: 13px; letter-spacing: 1px; margin-top: 10px; }
+        
+    .status { margin-top: 15px; text-align: center; font-weight: bold; padding: 10px; border-radius: 5px; }
+    .success { color: #155724; background-color: #d4edda; } 
+    .error { color: #721c24; background-color: #f8d7da; }
+    .loading { color: #856404; background-color: #fff3cd; }
+
+    @media (max-width: 600px) {
+            .navbar { padding: 15px 20px; }
+            .nav-brand { font-size: 0.9em; }
+            #btn-connect { padding: 8px 15px; font-size: 12px; }
+            h1 { font-size: 2em; }
+    }
+    
+    @media (max-width: 600px) {
+        .container { margin: 20px auto; width: 95%; padding: 20px; }
+    }
+
+#toast {
+    visibility: hidden;
+    min-width: 220px;
+    max-width: 85%;
+    position: fixed;
+    z-index: 99999;
+    top: 90px;
+    right: 20px;
+    left: auto;
+    background-color: rgba(51, 51, 51, 0.95);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 10px 35px 10px 15px; 
+    display: flex;
+    align-items: center;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    opacity: 0;
+    transform: translateX(20px) scale(0.9); 
+    transition: all 0.4s cubic-bezier(0.2, 0, 0, 1), visibility 0s 0.4s; 
+}
+
+#toast.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    transition: all 0.4s cubic-bezier(0.2, 0, 0, 1), visibility 0s 0s;
+}
+    
+#toast .toast-icon {
+    width: 23px;
+    height: 23px; 
+    margin-right: 10px; 
+    object-fit: contain;
+}
+
+#toast .toast-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 9px;
+    height: 9px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: 0.2s;
+}
+
+        #toast .toast-close:hover { opacity: 1; transform: scale(1.1); }
+
+    #toast.info {
+    background: rgba(0, 53, 107, 0.35);
+    border: 1px solid rgba(0, 100, 204, 0.4);
+    color: #fff;
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 8px 26px rgba(0,0,0,0.35), 0 0 20px rgba(0, 100, 255, 0.25);
+}
+
+#toast.success {
+    background: rgba(0, 77, 7, 0.35);
+    color: #fff;
+    border: 1px solid rgba(0, 184, 15, 0.4);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 8px 26px rgba(0,0,0,0.35), 0 0 20px rgba(0,255,0,0.2);
+}
+
+#toast.error {
+    background: rgba(107, 0, 0, 0.35);
+    color: #fff;
+    border: 1px solid rgba(184, 0, 0, 0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 8px 26px rgba(0,0,0,0.40), 0 0 22px rgba(255,0,0,0.25);
+    }
+
+#toast.warning {
+    background: rgba(102, 98, 0, 0.35);
+    color: #fff;
+    border: 1px solid rgba(179, 171, 0, 0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 8px 26px rgba(0,0,0,0.40), 0 0 20px rgba(255,255,0,0.25);
+}
+
+#toast.wolf {
+    background: rgba(125, 65, 0, 0.35);
+    color: #fff;
+    border: 1px solid rgba(204, 106, 0, 0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 8px 26px rgba(0,0,0,0.45), 0 0 20px rgba(255,140,0,0.25);
+}
+
+#toast.load {
+    background: rgba(49, 77, 0, 0.35);
+    color: #fff;
+    border: 1px solid rgba(104, 163, 0, 0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 8px 26px rgba(0,0,0,0.45), 0 0 20px rgba(0,255,0,0.25);
+}
+    
+#toast.loading {
+    background: rgba(52, 90, 0, 0.35);
+    color: #fff;
+    border: 1px solid rgba(94, 163, 0, 0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 8px 26px rgba(0,0,0,0.45), 0 0 20px rgba(94, 163, 0, 0.25);
+}
+
+@keyframes slideDown {
+    from {top: -50px; opacity: 0;}
+    to {top: 30px; opacity: 1;}
+}
+
+@keyframes fadeOut {
+    from {top: 30px; opacity: 1;}
+    to {top: -50px; opacity: 0;}
+    }
+
+    /* 1. Overlay Transparan (Hanya untuk deteksi klik luar) */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: transparent; /* Tidak ada warna/blur */
+    backdrop-filter: none;
+    z-index: 9998;
+    display: none;
+    /* Ubah dari flex ke block agar kita bisa atur posisi absolute manual */
+    display: none; 
+}
+
+.modal-overlay.active {
+    display: block; 
+}
+
+/* 2. Kartu Modal (Menjadi Dropdown) */
+.modal-card {
+    position: absolute; /* Kunci posisi */
+    
+    /* ATUR POSISI DISINI SESUAI TINGGI NAVBAR ANDA */
+    top: 70px;  /* Jarak dari atas (sesuaikan dengan tinggi navbar) */
+    right: 20px; /* Jarak dari kanan (supaya lurus dengan tombol connect) */
+    
+    width: 300px; /* Lebar fix agar rapi */
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px; /* Radius lebih kecil ala dropdown */
+    
+    /* Shadow Premium Soft */
+    box-shadow: 0 5px 30px rgba(0,0,0,0.15); 
+    border: 1px solid rgba(0,0,0,0.05); /* Border tipis halus */
+    
+    text-align: center;
+    font-family: 'Rubik', sans-serif;
+    
+    /* Animasi Muncul dari atas */
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+    transform-origin: top right; /* Animasi mulai dari pojok kanan atas */
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* State Aktif */
+.modal-overlay.active .modal-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* (Opsional) Segitiga Kecil Penunjuk ke Atas (Arrow) */
+.modal-card::before {
+    content: "";
+    position: absolute;
+    top: -6px; /* Muncul di atas kotak */
+    right: 20px; /* Posisi sejajar tombol */
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    transform: rotate(45deg); /* Putar jadi wajik */
+    border-left: 1px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    box-shadow: -2px -2px 5px rgba(0,0,0,0.02);
+}
+    
+/* Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+.modal-header h3 { margin: 0; font-size: 18px; color: #333; }
+.close-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #888; }
+
+/* Status Badge & Dot Kelap Kelip */
+.modal-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.status-badge {
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-label { color: #888; }
+    
+.pulse-dot {
+    width: 8px; height: 8px;
+    background-color: #27ae60;
+    border-radius: 50%;
+    box-shadow: 0 0 0 rgba(39, 174, 96, 0.4);
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(39, 174, 96, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+}
+
+/* Saldo */
+.modal-balance { margin-bottom: 20px; }
+.balance-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+.balance-amount { font-size: 24px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
+
+/* Address Box (Copyable) */
+.modal-address-box {
+    background: #f1f2f6;
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: 25px;
+}
+.modal-address-box:hover { border-color: #3498db; background: #eaf6ff; }
+.address-text { font-family: monospace; font-size: 14px; color: #555; }
+.copy-icon { color: #3498db; }
+
+/* Tombol Aksi */
+.modal-actions { display: flex; flex-direction: column; gap: 10px; }
+.action-btn {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.1s;
+}
+.action-btn:active { transform: scale(0.98); }
+.action-btn.primary { background: #7385a5; color: white; }
+.action-btn.danger { background: #fee; color: #e74c3c; border: 1px solid #fcc; }
+
+    /* Styling Area History di Modal */
+.modal-history-section {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.history-scroll-area {
+    max-height: 120px; /* Batasi tinggi agar tidak memenuhi layar */
+    overflow-y: auto;  /* Aktifkan Scroll Vertikal */
+    padding-right: 5px;
+}
+
+/* Custom Scrollbar Tipis */
+.history-scroll-area::-webkit-scrollbar { width: 4px; }
+.history-scroll-area::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+/* Kartu Item Riwayat Mini */
+.mini-history-item {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mini-sender { font-weight: bold; color: #5c6a84; }
+.mini-amount { color: #27ae60; font-weight: bold; }
+.mini-msg { 
+    display: block; 
+    font-size: 10px; 
+    color: #888; 
+    font-style: italic; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: 150px;
+}
+</style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+  <a href="index" style="display: flex; align-items: center; text-decoration: none;">
+    <img src="img/icon-192.png" class="nav-logo" style="margin-right:8px;">
+    <span class="nav-brand" style="font-size:20px; color: #7385a5; font-weight:bold;">Putramas Official</span>
+  </a>
+        </div>
+        <div class="nav-right">
+        <button id="btn-connect" onclick="connectWallet()">
+            <i class="fas fa-wallet"></i> Hubungkan
+        </button>
+    </div>
+    </nav>
+    
+<div class="container">
+    <div class="header">
+        <h2>
+    <i class="fas fa-cloud-upload-alt" style="font-size: 25px; color: #7385a5; margin-right: 10px; vertical-align: middle;"></i> 
+    Upload Ke Galeri Nusantara
+        </h2>
+    </div>
+    
+    <fieldset>
+        <legend>1. Identitas Utama</legend>
+        <label>Upload Foto:</label>
+        <input type="file" id="inputGambar" required>
+        <label>Nama Tokoh:</label>
+        <input type="text" id="inputNama" required placeholder="Contoh: Arjuna">
+        
+        <div style="display: flex; gap: 15px;">
+            <div style="flex: 1;">
+                <label>Golongan:</label>
+                <select id="inputGolongan" required>
+                    <option value="Satria">Satria</option>
+                    <option value="Dewa">Dewa</option>
+                    <option value="Yaksa">Yaksa</option>
+                    <option value="Wanara">Wanara</option>
+                    <option value="Panakawan">Panakawan</option>
+                    <option value="Kayon">Kayon</option>
+                    <option value="Bambangan">Bambangan</option>
+                    <option value="Punggawa">Punggawa</option>
+                    <option value="Krodan">Krodan</option>
+                    <option value="Resi">Resi</option>
+                    <option value="Putren">Putren</option>
+                    <option value="Buta Kiwe">Buta Kiwe</option>
+                    <option value="Sato">Sato</option>
+                    <option value="Gaman">Gaman</option>
+                </select>
+            </div>
+            <div style="flex: 1;">
+                <label>Gaya:</label>
+                <select id="inputGaya" required>
+                    <option value="Bali">Bali</option>
+                    <option value="Banjar">Banjar</option>
+                    <option value="Banyumas">Banyumas</option>
+                    <option value="Cirebon">Cirebon</option>
+                    <option value="Jawa Barat">Golek Sunda</option>
+                    <option value="Jawa Timur">Jawa Timur</option>
+                    <option value="Kedu">Kedu</option>
+                    <option value="Lombok">Lombok</option>
+                    <option value="Surakarta">Surakarta</option>
+                    <option value="Yogyakarta">Yogyakarta</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+
+<fieldset>
+        <legend>2. Detail Fisik</legend>
+        <label>Wanda (Ekspresi):</label>
+        <input type="text" id="inputWanda">
+        <div style="display:flex; gap:10px;">
+        <div style="flex:1"><label>Material Kulit:</label>
+        <input type="text" id="inputKulit"></div>
+        <div style="flex:1"><label>Material Gapit:</label>
+        <input type="text" id="inputGapit"></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label>Penatah:</label><input type="text" id="inputPenatah"></div>
+            <div style="flex:1"><label>Penyungging:</label><input type="text" id="inputPenyungging"></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label>Tahun Pembuatan:</label><input type="text" id="inputTahun"></div>
+            <div style="flex:1"><label>Kolektor:</label><input type="text" id="inputKolektor"></div>
+        </div>
+</fieldset>
+
+    <fieldset>
+        <legend>3. Silsilah</legend>
+        <div style="display: flex; gap: 15px;">
+            <div style="flex: 1;"><label>Ayah:</label><input type="text" id="inputAyah" required></div>
+            <div style="flex: 1;"><label>Ibu:</label><input type="text" id="inputIbu" required></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+        <div style="flex:1"><label>Negara:</label>
+        <input type="text" id="inputNegara" required"></div>
+        <div style="flex:1"><label>Pusaka:</label>
+        <input type="text" id="inputPusaka" required"></div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>4. Media & Cerita</legend>
+        <label>Deskripsi Singkat:</label>
+        <textarea id="inputDeskripsi" required rows="3"></textarea>
+    </fieldset>
+
+    <button class="btn-action" onclick="kirimKeAdmin()">
+    <i class="fas fa-paper-plane" style="color: #7385a5; margin-right: 8px;"></i> 
+    UPLOAD
+    </button>
+    <div id="statusPublik"></div>
+</div>
+
+    <div id="walletModal" class="modal-overlay" onclick="closeWalletModal(event)">
+    <div class="modal-card">
+    
+    <div class="modal-header">
+        <h3><i class="fas fa-wallet" style="color:#7385a5;"></i> Wallet Info</h3>
+        <button class="close-btn" onclick="toggleWalletModal()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="modal-status">
+        <span class="status-label">Status:</span>
+        <div class="status-badge">
+            <span class="pulse-dot"></span> Terhubung Base Network
+        </div>
+    </div>
+
+    <div class="modal-balance">
+        <div class="balance-label">Saldo Dompet Utama</div>
+        <div class="balance-amount" id="modalBalance">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+        </div>
+
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #d1d9e6;">
+            <div class="balance-label" style="color:#888;">
+                <i class="fas fa-gift"></i> Total Pendapatan Dukungan
+            </div>
+            <div class="balance-amount" id="modalTipBalance" style="font-size: 18px; color: #7385a5;">
+                0.0000 ETH
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-address-box" onclick="copyAddress()">
+        <div class="address-text">
+            <span id="modalFullAddress" style="display:none;"></span> 
+            <span id="modalShortAddress">0x...</span>
+        </div>
+        <i class="far fa-copy copy-icon"></i>
+    </div>
+
+    <div class="modal-history-section">
+        <h4 style="font-size:12px; color:#7385a5; margin:0 0 8px 0; display:flex; justify-content:space-between;">
+            <span><i class="fas fa-history"></i> Riwayat Masuk</span>
+            <span id="modalTipCountBadge" style="background:#eee; padding:2px 6px; border-radius:10px; font-size:10px;">0</span>
+        </h4>
+        
+        <div id="modalHistoryList" class="history-scroll-area">
+            <p style="text-align:center; font-size:11px; color:#aaa; margin-top:10px;">Belum ada riwayat.</p>
+        </div>
+
+        <button id="btnModalLoadMore" onclick="loadNextModalTips()" style="display:none; width:100%; margin-top:5px; background:none; border:1px dashed #7385a5; color:#7385a5; font-size:10px; padding:5px; cursor:pointer; border-radius:5px;">
+            Muat 2 Lama <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+
+    <div class="modal-actions" style="margin-top: 15px;">
+        <button class="action-btn primary" onclick="window.location.href='/profile'">
+            <i class="fas fa-user-circle"></i> Buka Profil Saya
+        </button>
+        
+        <button class="action-btn danger" onclick="disconnectWallet()">
+            <i class="fas fa-sign-out-alt"></i> Putuskan Koneksi
+        </button>
+    </div>
+    
+    </div>
+    </div>
+
+<div id="toast"></div>
+
+</div> <footer class="footer">
+        <div class="footer-content">
+            <div class="social-icons">
+                <a href="https://youtube.com/@PutramasOfficial" target="_blank" class="social-link"><i class="fab fa-youtube"></i></a>
+                <a href="https://instagram.com/putramas_official" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
+                <a href="https://facebook.com/PutramasOfficial" target="_blank" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://facebook.com/PutramasOfficialStudio" target="_blank" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            </div>
+            <p class="copyright">
+                &copy; <span id="year"></span> Powered By <strong>Putramas Official</strong>
+            </p>
+        </div>
+</footer>
+
+<script>
+    const CONTRACT_ADDRESS = "0x72359F776Ac4B44c6c79dBF805D79959515E0c58"; // <--- ISI ALAMAT KONTRAK BARU V3
+    const PINATA_API_KEY = "d209d53257fcc57219af";    
+    const PINATA_SECRET_KEY = "c65d0f4b9de3d144cbb09da6394b2f8dd690e09a9a7b1533d465b541350e7c0d";
+
+    const BASE_SEPOLIA_ID = '0x2105';
+    const BASE_SEPOLIA_RPC = 'https://base-rpc.publicnode.com';
+
+    // 2. KONFIGURASI RPC (Untuk Auto-Add)
+    const BASE_SEPOLIA_CONFIG = {
+        chainId: BASE_SEPOLIA_ID, 
+        chainName: 'Base',
+        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+        rpcUrls: ['https://base-rpc.publicnode.com'],
+        blockExplorerUrls: ['https://basescan.org']
+    };
+    
+    // ABI Minimalis untuk Fungsi Upload
+    const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newFee","type":"uint256"}],"name":"FeeUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"address","name":"user","type":"address"}],"name":"Liked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint8","name":"star","type":"uint8"},{"indexed":false,"internalType":"string","name":"ulasan","type":"string"}],"name":"Reviewed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newFee","type":"uint256"}],"name":"RevisionFeeUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"string","name":"message","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"TipSent","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"string","name":"nama","type":"string"},{"indexed":false,"internalType":"string","name":"golongan","type":"string"}],"name":"WayangLahir","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"string","name":"nama","type":"string"},{"indexed":false,"internalType":"string","name":"golongan","type":"string"},{"indexed":false,"internalType":"bool","name":"isOfficial","type":"bool"},{"indexed":false,"internalType":"address","name":"creator","type":"address"}],"name":"WayangLahir","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"string","name":"namaBaru","type":"string"},{"indexed":false,"internalType":"string","name":"uriBaru","type":"string"}],"name":"WayangUpdate","type":"event"},{"inputs":[],"name":"MAX_TIP","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_TIP","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_penerima","type":"address"},{"internalType":"string","name":"_tokenURI","type":"string"},{"internalType":"string","name":"_nama","type":"string"},{"internalType":"string","name":"_golongan","type":"string"},{"internalType":"string","name":"_gaya","type":"string"}],"name":"arsipWayang","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"dalang","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdrawETH","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getAverageRating","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"golongan","type":"string"}],"name":"getIdsByGolongan","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getInfoWayang","outputs":[{"components":[{"internalType":"string","name":"nama","type":"string"},{"internalType":"string","name":"golongan","type":"string"},{"internalType":"string","name":"gaya","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isOfficial","type":"bool"},{"internalType":"address","name":"creator","type":"address"}],"internalType":"struct WayangArsipPutramas.WayangInfo","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getReviews","outputs":[{"components":[{"internalType":"address","name":"reviewer","type":"address"},{"internalType":"uint8","name":"bintang","type":"uint8"},{"internalType":"string","name":"ulasan","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"internalType":"struct WayangArsipPutramas.Review[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getTipByIndex","outputs":[{"components":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"receiver","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"string","name":"message","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"internalType":"struct WayangArsipPutramas.TipRecord","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getTipCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTipTotalBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"hasLiked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"hasReviewed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"kasihLike","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"uint8","name":"_bintang","type":"uint8"},{"internalType":"string","name":"_ulasanPilihan","type":"string"}],"name":"kasihUlasan","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"publicMintFee","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_tokenId","type":"uint256"},{"internalType":"string","name":"_namaBaru","type":"string"},{"internalType":"string","name":"_uriBaru","type":"string"}],"name":"revisiDataWayang","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"},{"internalType":"string","name":"_namaBaru","type":"string"},{"internalType":"string","name":"_uriBaru","type":"string"}],"name":"revisiWayang","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"revisionFee","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"_receiver","type":"address"},{"internalType":"string","name":"_message","type":"string"}],"name":"sendTip","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newFee","type":"uint256"}],"name":"setMintFee","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_newFee","type":"uint256"}],"name":"setRevisionFee","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalLikes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"totalReceived","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTipsGrand","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"_tokenURI","type":"string"},{"internalType":"string","name":"_nama","type":"string"},{"internalType":"string","name":"_golongan","type":"string"},{"internalType":"string","name":"_gaya","type":"string"}],"name":"uploadPublik","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"walletOfOwner","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"wayangRegistry","outputs":[{"internalType":"string","name":"nama","type":"string"},{"internalType":"string","name":"golongan","type":"string"},{"internalType":"string","name":"gaya","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"bool","name":"isActive","type":"bool"},{"internalType":"bool","name":"isOfficial","type":"bool"},{"internalType":"address","name":"creator","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"wayangReviews","outputs":[{"internalType":"address","name":"reviewer","type":"address"},{"internalType":"uint8","name":"bintang","type":"uint8"},{"internalType":"string","name":"ulasan","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"}];
+        
+    let provider, signer, userAddress;
+    let toastTimeout;
+    // --- VARIABEL GLOBAL KHUSUS MODAL ---
+let modalTipCursor = 0;      // Penanda index untuk modal
+let modalUserAddr = null;    // Alamat user yang sedang login
+let isModalFetching = false; // Kunci loading
+
+    // --- FUNGSI GANTI NETWORK (Tadi hilang ini) ---
+    async function switchNetwork() {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: BASE_SEPOLIA_CONFIG.chainId }],
+            });
+        } catch (error) {
+            // Error 4902 artinya chain belum ditambahkan di wallet
+            if (error.code === 4902) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [BASE_SEPOLIA_CONFIG],
+                    });
+                } catch (addError) {
+                    console.error("Gagal menambahkan network:", addError);
+                    showToast("Gagal menambahkan network Base otomatis.", 'error');
+                }
+            } else {
+                console.error("Gagal ganti network:", error);
+                showToast("Gagal berpindah network.", 'error');
+            }
+        }
+    }
+
+    // --- FUNGSI KONEKSI UTAMA ---
+    async function connectWallet() {
+        const btn = document.getElementById("btn-connect");
+
+        // Jika sudah connect, klik tombol membuka Modal Info
+        if (btn.classList.contains("connected")) {
+            toggleWalletModal();
+            return;
+        }
+
+        // Cek Metamask
+        if (!window.ethereum) return showToast("Install Metamask Dulu!", 'wolf');
+
+        try {
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            
+            // Cek & Switch Network Otomatis
+            const network = await provider.getNetwork();
+            
+            // Menggunakan parseInt(hex, 16) untuk mencocokkan ID
+            if (network.chainId !== parseInt(BASE_SEPOLIA_ID, 16)) {
+                await switchNetwork();
+                // Refresh provider setelah ganti network
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+            }
+
+            signer = provider.getSigner();
+            userAddress = await signer.getAddress();
+            
+            // Update UI Tombol
+            btn.innerHTML = `<i class="fas fa-wallet"></i> Info Profile`;
+            btn.classList.add("connected");
+
+            // Isi Data ke Modal
+            if(document.getElementById("modalFullAddress")) {
+                document.getElementById("modalFullAddress").innerText = userAddress;
+                document.getElementById("modalShortAddress").innerText = userAddress.substring(0, 10) + "..." + userAddress.substring(35);
+
+                const balance = await provider.getBalance(userAddress);
+                const ethBalance = ethers.utils.formatEther(balance);
+                document.getElementById("modalBalance").innerText = parseFloat(ethBalance).toFixed(4) + " ETH";
+            }
+
+            await updateModalWalletData(userAddress);
+
+            showToast("Dompet Terhubung!", 'success');
+
+        } catch (err) { 
+            console.error(err); 
+            showToast("Batal / Gagal koneksi.", 'error'); 
+        }
+    }
+
+    // --- LOGIKA MODAL WALLET ---
+    function toggleWalletModal() {
+        const modal = document.getElementById("walletModal");
+        if (modal.classList.contains("active")) {
+            modal.classList.remove("active");
+            setTimeout(() => modal.style.display = "none", 200);
+        } else {
+            modal.style.display = "block";
+            setTimeout(() => modal.classList.add("active"), 10);
+            if (typeof userAddress !== 'undefined' && userAddress) {
+            updateModalWalletData(userAddress);
+            }
+        }
+    }
+
+    function closeWalletModal(e) {
+        if (e.target.id === "walletModal") toggleWalletModal();
+    }
+
+    function copyAddress() {
+        const addr = document.getElementById("modalFullAddress").innerText;
+        if(!addr) return;
+        navigator.clipboard.writeText(addr).then(() => {
+            showToast("Alamat Wallet disalin!", 'success');
+        });
+    }
+
+    function disconnectWallet() {
+        userAddress = null;
+        signer = null;
+        
+        const btn = document.getElementById("btn-connect");
+        btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;
+        btn.classList.remove("connected");
+        
+        toggleWalletModal();
+        
+        setTimeout(() => window.location.reload(), 500);
+    }
+
+    // --- UPDATE FUNGSI INI DI HALAMAN UPLOAD ---
+
+async function updateModalWalletData(userAddress) {
+    if(!userAddress) return;
+    modalUserAddr = userAddress;
+
+    // Reset UI ke Loading
+    const listEl = document.getElementById("modalHistoryList");
+    const balEl = document.getElementById("modalTipBalance");
+    const badgeEl = document.getElementById("modalTipCountBadge");
+    const btnMore = document.getElementById("btnModalLoadMore");
+
+    if(listEl) listEl.innerHTML = `<div style="text-align:center; padding:10px;"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>`;
+    if(btnMore) btnMore.style.display = 'none';
+
+    try {
+        // 1. DETEKSI PROVIDER (Pakai Metamask biar tidak error)
+        let readProvider;
+        if (typeof provider !== 'undefined' && provider) {
+            readProvider = provider; 
+        } else {
+            readProvider = new ethers.providers.JsonRpcProvider(BASE_SEPOLIA_RPC);
+        }
+
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, readProvider);
+
+        // A. AMBIL TOTAL PENDAPATAN
+        const totalWei = await contract.getTipTotalBalance(userAddress);
+        const totalEth = parseFloat(ethers.utils.formatEther(totalWei)).toFixed(4);
+        if(balEl) {
+            balEl.innerText = totalEth + " ETH";
+            balEl.style.color = parseFloat(totalEth) > 0 ? "#7385a5" : "#888";
+        }
+
+        // B. AMBIL JUMLAH HISTORY
+        const countBN = await contract.getTipCount(userAddress);
+        const count = parseInt(countBN.toString()); 
+        
+        if(badgeEl) badgeEl.innerText = count;
+
+        if (count === 0) {
+            if(listEl) listEl.innerHTML = `<p style="text-align:center; font-size:11px; color:#aaa; margin-top:10px;">Belum ada riwayat masuk.</p>`;
+            return;
+        }
+
+        // C. SIAPKAN BATCH PERTAMA
+        modalTipCursor = count - 1; 
+        if(listEl) listEl.innerHTML = ""; 
+        
+        await loadNextModalTips(); 
+
+    } catch (e) {
+        console.error("Gagal update modal data:", e);
+        if(listEl) listEl.innerHTML = `<p style="color:red; font-size:10px; text-align:center;">Gagal memuat data.</p>`;
+    }
+}
+
+async function loadNextModalTips() {
+    if(isModalFetching || modalTipCursor < 0) return;
+    
+    isModalFetching = true;
+    const container = document.getElementById("modalHistoryList");
+    const btnMore = document.getElementById("btnModalLoadMore");
+    
+    if(btnMore) btnMore.innerHTML = "Memuat...";
+
+    // 1. DETEKSI PROVIDER (Sama seperti di atas)
+    let readProvider;
+    if (typeof provider !== 'undefined' && provider) {
+        readProvider = provider;
+    } else {
+        readProvider = new ethers.providers.JsonRpcProvider(BASE_SEPOLIA_RPC);
+    }
+
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, readProvider);
+
+    let end = modalTipCursor - 2 + 1;
+    if(end < 0) end = 0;
+
+    let html = "";
+
+    for (let i = modalTipCursor; i >= end; i--) {
+        try {
+            const tip = await contract.getTipByIndex(modalUserAddr, i);
+            const senderShort = tip.sender.substring(0,4) + ".." + tip.sender.substring(38);
+            const amount = parseFloat(ethers.utils.formatEther(tip.amount)).toFixed(4);
+            const msg = tip.message || "Tanpa pesan";
+
+            html += `
+            <div class="mini-history-item">
+                <div>
+                    <div class="mini-sender"><i class="fas fa-user-circle"></i> ${senderShort}</div>
+                    <span class="mini-msg">"${msg}"</span>
+                </div>
+                <div class="mini-amount">+${amount} ETH</div>
+            </div>`;
+        } catch (e) {}
+    }
+
+    container.insertAdjacentHTML('beforeend', html);
+    modalTipCursor = end - 1;
+    isModalFetching = false;
+
+    if(btnMore) {
+        if(modalTipCursor >= 0) {
+            btnMore.style.display = 'block';
+            btnMore.innerHTML = `Muat 2 Lama <i class="fas fa-chevron-down"></i>`;
+        } else {
+            btnMore.style.display = 'none';
+        }
+    }
+}
+    
+    async function uploadToIPFS(file) {
+        const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
+        let data = new FormData();
+        data.append('file', file);
+        const res = await axios.post(url, data, {
+            headers: {'pinata_api_key': PINATA_API_KEY, 'pinata_secret_api_key': PINATA_SECRET_KEY, "Content-Type": "multipart/form-data"}
+        });
+        return `https://gateway.pinata.cloud/ipfs/${res.data.IpfsHash}`;
+    }
+
+    async function uploadJSON(jsonData) {
+        const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
+        const res = await axios.post(url, jsonData, {
+            headers: {'pinata_api_key': PINATA_API_KEY, 'pinata_secret_api_key': PINATA_SECRET_KEY}
+        });
+        return `ipfs://${res.data.IpfsHash}`;
+    }
+    
+    // Helper untuk mengambil value input, jika kosong diisi "-"
+    function getVal(id) {
+        const el = document.getElementById(id);
+        return (el && el.value.trim() !== "") ? el.value.trim() : "-";
+    }
+
+    async function kirimKeAdmin() {
+        const statusEl = document.getElementById("statusPublik");
+        
+        // 1. Validate Wallet
+        if(!userAddress) return showToast("Wajib hubungkan wallet dulu!", 'warning');
+        
+        // 2. Get Main Values
+        const nama = document.getElementById("inputNama").value;
+        const gol = document.getElementById("inputGolongan").value;
+        const gaya = document.getElementById("inputGaya").value;
+        const fileInput = document.getElementById("inputGambar");
+        // Use only the original description text
+        const deskripsiAsli = document.getElementById("inputDeskripsi").value; 
+        
+        if(!nama || fileInput.files.length === 0) return showToast("Nama dan Gambar wajib diisi!", 'error');
+
+        try {
+            // --- STAGE 1: COMPRESS IMAGE ---
+            statusEl.className = "status loading";
+            const loadingIcon = `<img src="https://i.gifer.com/ZZ5H.gif" style="width:20px; vertical-align:middle; margin-right:10px;">`;
+            
+            statusEl.innerHTML = `${loadingIcon} 1/4 Memproses Gambar...`;
+            // Using 300KB limit as requested
+            const compressedFile = await compressImage(fileInput.files[0], 300);
+
+            // --- STAGE 2: UPLOAD IMAGE TO IPFS ---
+            statusEl.innerHTML = `${loadingIcon} 2/4 Upload ke Cloud (IPFS)...`;
+            const imgUrl = await uploadToIPFS(compressedFile);
+
+            // --- STAGE 3: COMPILE METADATA ---
+            statusEl.innerHTML = `${loadingIcon} 3/4 Menyusun Data Lengkap...`;
+            
+            // Get all additional data
+            const wanda = getVal("inputWanda");
+            const kulit = getVal("inputKulit");
+            // Optional fields - ensure getVal handles missing elements gracefully or check existence
+            const gapit = document.getElementById("inputGapit") ? getVal("inputGapit") : "-"; 
+            const penatah = getVal("inputPenatah");
+            const penyungging = getVal("inputPenyungging");
+            const tahun = getVal("inputTahun");
+            const kolektor = getVal("inputKolektor");
+            
+            const ayah = getVal("inputAyah");
+            const ibu = getVal("inputIbu");
+            const negara = getVal("inputNegara");
+            const pusaka = getVal("inputPusaka");
+
+            // FORMAT JSON METADATA
+            // We use 'deskripsiAsli' directly for a clean description field.
+            // All technical data goes into 'attributes'.
+            const metadata = {
+                name: nama,
+                description: deskripsiAsli, 
+                image: imgUrl,
+                attributes: [
+                    { trait_type: "Golongan", value: gol },
+                    { trait_type: "Gaya", value: gaya },
+                    { trait_type: "Wanda", value: wanda },
+                    { trait_type: "Material Kulit", value: kulit },
+                    { trait_type: "Material Gapit", value: gapit },
+                    { trait_type: "Penatah", value: penatah },
+                    { trait_type: "Penyungging", value: penyungging },
+                    { trait_type: "Tahun Pembuatan", value: tahun },
+                    { trait_type: "Kolektor", value: kolektor },
+                    { trait_type: "Ayah", value: ayah },
+                    { trait_type: "Ibu", value: ibu },
+                    { trait_type: "Negara", value: negara },
+                    { trait_type: "Pusaka", value: pusaka },
+                    { trait_type: "Creator", value: userAddress },
+                    { trait_type: "Type", value: "Public Contribution" }
+                ]
+            };
+            
+            const tokenURI = await uploadJSON(metadata);
+
+            // --- STAGE 4: MINTING TO BLOCKCHAIN ---
+            statusEl.innerHTML = `${loadingIcon} 4/4 Konfirmasi di Wallet...`;
+            
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+            // Fetch fee dynamically
+            const fee = await contract.publicMintFee();
+            
+            // Execute Transaction
+            const tx = await contract.uploadPublik(tokenURI, nama, gol, gaya, { value: fee });
+            
+            statusEl.innerHTML = `${loadingIcon} Menunggu Konfirmasi Blockchain...`;
+            
+            // 1. TANGKAP RECEIPT (BUKTI TRANSAKSI)
+            const receipt = await tx.wait(); 
+
+            // 2. CARI TOKEN ID DARI EVENT LOG
+            // Kita cari event 'WayangLahir' (args[0] biasanya ID) atau 'Transfer' (args[2] biasanya ID)
+            let newTokenId = "";
+            
+            if (receipt.events) {
+                // Coba cari event spesifik 'WayangLahir' dulu
+                const lahirEvent = receipt.events.find(e => e.event === "WayangLahir");
+                if (lahirEvent && lahirEvent.args) {
+                    newTokenId = lahirEvent.args[0].toString();
+                } 
+                // Jika tidak ketemu, cari event 'Transfer' standar (Minting = Transfer dari 0x0 ke User)
+                else {
+                    const transferEvent = receipt.events.find(e => e.event === "Transfer");
+                    if (transferEvent && transferEvent.args) {
+                        // Di ERC721 standard, tokenId biasanya ada di index ke-2 (from, to, tokenId)
+                        newTokenId = transferEvent.args[2].toString();
+                    }
+                }
+            }
+
+            // SUCCESS UI
+            statusEl.className = "status success";
+            statusEl.innerHTML = `
+                <i class="fas fa-check-circle" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                SUKSES!<br>
+                <span style="font-weight:normal; font-size:13px;">Koleksi Anda sudah berhasil dicetak.</span><br>
+                <div style="margin-top:15px; display:flex; gap:20px; justify-content:center; align-items:center; font-size:13px;">
+                ${newTokenId ? `
+                    <a href="detail?id=${newTokenId}" style="color:#27ae60; text-decoration:underline; font-weight:bold;">
+                        <i class="fas fa-eye"></i> Lihat Koleksi
+                    </a>` : ''}
+                
+                    <a href="https://basescan.org/tx/${tx.hash}" target="_blank" style="color:#7385a5; text-decoration:underline; font-weight:bold;">
+                        <i class="fas fa-external-link-alt"></i> Lihat Transaksi
+                    </a>
+                </div>`;
+            // Reset Form
+            document.getElementById("inputNama").value = "";
+            document.getElementById("inputGambar").value = "";
+            document.getElementById("inputDeskripsi").value = "";
+            showToast("Upload Berhasil!", "success");
+
+        } catch (err) {
+            console.error(err);
+            statusEl.className = "status error";
+            statusEl.innerText = "Gagal: " + (err.reason || err.message);
+        }
+    }
+    
+    // --- FUNGSI KOMPRESI GAMBAR (AUTO 300KB) ---
+    async function compressImage(file, maxSizeKB = 300) {
+        // 1. Cek ukuran awal, kalau sudah kecil, skip
+        if (file.size <= maxSizeKB * 1024) return file;
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.src = ev.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    
+                    // 2. Resize Dimensi (Maksimal 1000px agar mudah mencapai 300KB)
+                    const MAX = 1000; 
+                    if (w > MAX || h > MAX) {
+                        const ratio = w / h;
+                        if (w > h) { w = MAX; h = MAX / ratio; }
+                        else { h = MAX; w = MAX * ratio; }
+                    }
+                    
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    
+                    // 3. Logika Kompresi Berulang (Turunkan kualitas sampai pas)
+                    let quality = 0.9;
+                    
+                    const recursiveCompress = () => {
+                        canvas.toBlob((blob) => {
+                            if (!blob) return reject("Gagal kompresi");
+
+                            // Cek: Apakah sudah <= 300KB ATAU kualitas sudah mentok rendah (0.1)?
+                            if (blob.size <= maxSizeKB * 1024 || quality <= 0.1) {
+                                // Selesai
+                                resolve(new File([blob], file.name, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now()
+                                }));
+                            } else {
+                                // Masih kegedean? Turunkan kualitas 10% lalu coba lagi
+                                quality -= 0.1;
+                                recursiveCompress();
+                            }
+                        }, 'image/jpeg', quality);
+                    };
+
+                    recursiveCompress(); // Mulai proses
+                };
+            };
+            reader.onerror = reject;
+        });
+    }
+
+function showToast(msg, type = 'info') {
+    const x = document.getElementById("toast");
+
+    const icons = {
+        info: 'img/info-icon.svg',
+        load: 'img/load.svg',
+        loading: 'img/loading.svg',
+        success: 'img/success.svg',
+        error: 'img/error.svg',
+        warning: 'img/warning.svg',
+        wolf: 'img/wolf.svg'
+    };
+
+    const closeIcon = 'img/x.svg'; 
+
+    if (!icons[type]) type = 'info';
+
+    x.innerHTML = `
+        <img src="${icons[type]}" class="toast-icon" alt="${type}"> 
+        <span style="flex:1;">${msg}</span>
+        <img src="${closeIcon}" class="toast-close" onclick="this.parentElement.className = this.parentElement.className.replace('show', '')" alt="close">
+    `;
+
+    x.className = ''; 
+    void x.offsetWidth; 
+    x.className = `show ${type}`;
+
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => { 
+        x.className = x.className.replace("show", ""); 
+    }, 10000); 
+    }
+    
+    document.getElementById("year").innerText = new Date().getFullYear();
+</script>
+</body>
+</html>
