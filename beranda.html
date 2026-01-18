@@ -1292,8 +1292,8 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
             <span class="brand" style="font-size:20px; color: #7385a5; font-weight:bold;">Beranda</span>
         </a>
     </div>
-    <button class="btn-connect" id="btnConnect" onclick="connectWallet()">
-        <i class="fas fa-wallet"></i> Hubungkan
+    <button id="btnConnect" class="btn-connect">
+    <i class="fas fa-wallet"></i> Hubungkan
     </button>
 </nav>
 
@@ -1970,16 +1970,14 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
     </script>
 
     <script type="module">
-    // 1. Import Library
+    // 1. Import Library (Pastikan internet lancar, atau gunakan VPN jika 404)
     import { createAppKit } from 'https://esm.sh/@reown/appkit@1.6.5';
     import { Ethers5Adapter } from 'https://esm.sh/@reown/appkit-adapter-ethers5@1.6.5';
     import { base } from 'https://esm.sh/@reown/appkit/networks';
-    import { ethers } from 'https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.esm.min.js';
 
     // 2. Konfigurasi
     const projectId = 'f67f439f77eb6398f723672f2daf89c8';
     
-    // Metadata Website
     const metadata = {
         name: 'Putramas Social Feed',
         description: 'Arsip Digital Galeri Wayang Nusantara',
@@ -1987,128 +1985,141 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
         icons: ['https://putramas.web.id/img/icon-192.png']
     };
 
-    // 3. Init AppKit
-    const modal = createAppKit({
-        adapters: [new Ethers5Adapter()],
-        networks: [base],
-        metadata,
-        projectId,
-        features: {
-            analytics: true,
-            email: true,
-            socials: ['google', 'x', 'discord'],
-            emailShowWallets: true,
-        },
-        themeMode: 'light',
-        themeVariables: {
-            '--w3m-accent': '#7385a5',
-            '--w3m-border-radius-master': '2px'
-        }
-    });
+    // 3. Inisialisasi Modal
+    // Kita bungkus try-catch agar jika gagal init, kode bawah tetap jalan
+    let modal;
+    try {
+        modal = createAppKit({
+            adapters: [new Ethers5Adapter()],
+            networks: [base],
+            metadata,
+            projectId,
+            features: {
+                analytics: true,
+                email: true,
+                socials: ['google', 'x', 'discord'],
+                emailShowWallets: true,
+            },
+            themeMode: 'light',
+            themeVariables: {
+                '--w3m-accent': '#7385a5',
+                '--w3m-border-radius-master': '2px'
+            }
+        });
+    } catch (e) {
+        console.error("Gagal Init AppKit (Cek Internet/ID):", e);
+    }
 
-    // 4. FUNGSI CONNECT (Dipanggil Tombol HTML)
-    window.connectWallet = async function() {
+    // 4. FUNGSI LOGIC CONNECT (Internal)
+    async function handleConnect() {
         const btn = document.getElementById("btnConnect");
         
-        // Jika sudah connect (Ditandai variable global), buka Info Profile
+        // Cek variable global (apakah sudah connect?)
         if (window.isWalletConnected) {
+            // Jika sudah connect, buka profil
             if(typeof window.toggleWalletModal === 'function') {
                 window.toggleWalletModal();
+            } else {
+                console.log("Toggle modal tidak ditemukan, disconnect manual...");
+                if(typeof window.disconnectWallet === 'function') window.disconnectWallet();
             }
             return;
         }
 
         // Jika belum, Buka AppKit
-        try {
-            if(btn) btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Loading...`;
-            await modal.open();
-        } catch (error) {
-            console.error("User menutup modal:", error);
-            if(btn) btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;
+        if (modal) {
+            try {
+                if(btn) btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Loading...`;
+                await modal.open();
+            } catch (error) {
+                console.error("Modal error:", error);
+                if(btn) btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;
+            }
+        } else {
+            alert("Sistem Wallet gagal dimuat. Coba refresh.");
         }
-    };
+    }
 
-    // 5. FUNGSI DISCONNECT
+    // 5. Expose fungsi ke Window (Untuk keperluan script lain jika butuh)
+    window.connectWallet = handleConnect;
+
     window.disconnectWallet = async function() {
-        try {
-            await modal.disconnect();
-        } catch(e) {}
-        
-        // Reset State Global
+        try { if(modal) await modal.disconnect(); } catch(e) {}
+        localStorage.removeItem("walletConnected");
         window.isWalletConnected = false;
-        window.modalUserAddr = null;
-        
-        localStorage.removeItem("walletConnected"); // Bersihkan cache lama
-        
-        // Reload Halaman
         window.location.reload();
     };
 
-    // 6. EVENT LISTENER (JANTUNG APLIKASI)
-    // Ini akan jalan otomatis saat user connect atau auto-login dari AppKit
-    modal.subscribeState(async (state) => {
-        const btn = document.getElementById("btnConnect");
+    // 6. EVENT LISTENER (PENGGANTI ONCLICK)
+    // Ini menjamin fungsi hanya dipanggil setelah script siap
+    const btn = document.getElementById("btnConnect");
+    if (btn) {
+        btn.addEventListener("click", handleConnect);
+        console.log("✅ Tombol Connect Siap!");
+    }
 
-        // --- KONDISI: TERKONEKSI ---
-        if (state.selectedNetworkId && state.address) {
-            console.log("✅ AppKit Terhubung:", state.address);
-            
-            const userAddress = state.address;
-            
-            // A. Set Global Variables
-            window.modalUserAddr = userAddress;
-            window.isWalletConnected = true;
+    // 7. MONITOR STATUS KONEKSI
+    if (modal) {
+        modal.subscribeState(async (state) => {
+            const btn = document.getElementById("btnConnect");
 
-            // B. Setup Provider & Signer (PENTING untuk transaksi)
-            const walletProvider = modal.getProvider();
-            if (walletProvider) {
-                const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
-                window.signer = ethersProvider.getSigner(); // Set Global Signer
+            // --- USER TERKONEKSI ---
+            if (state.selectedNetworkId && state.address) {
+                console.log("✅ AppKit Terhubung:", state.address);
+                const userAddress = state.address;
                 
-                // Ambil Saldo ETH
-                try {
-                    const balance = await ethersProvider.getBalance(userAddress);
-                    const ethVal = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);
-                    const balEl = document.getElementById("modalBalance");
-                    if(balEl) balEl.innerText = ethVal + " ETH";
-                } catch(e) {}
-            }
+                // Update State Global
+                window.modalUserAddr = userAddress;
+                window.isWalletConnected = true;
 
-            // C. Update Tampilan Tombol
-            if(btn) {
-                btn.innerHTML = `<i class="fas fa-wallet"></i> Info Profile`;
-                btn.classList.add("connected");
-            }
+                // Setup Provider
+                const walletProvider = modal.getProvider();
+                if (walletProvider) {
+                    const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
+                    window.signer = ethersProvider.getSigner();
+                    
+                    // Ambil Saldo
+                    try {
+                        const balance = await ethersProvider.getBalance(userAddress);
+                        const ethVal = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);
+                        const balEl = document.getElementById("modalBalance");
+                        if(balEl) balEl.innerText = ethVal + " ETH";
+                    } catch(e) {}
+                }
 
-            // D. Update Modal Info Wallet
-            if(document.getElementById("modalFullAddress")) {
-                document.getElementById("modalFullAddress").innerText = userAddress;
-                document.getElementById("modalShortAddress").innerText = userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
-            }
+                // Update Tampilan Tombol
+                if(btn) {
+                    btn.innerHTML = `<i class="fas fa-wallet"></i> Info Profile`;
+                    btn.classList.add("connected");
+                }
 
-            // E. Jalankan Fungsi-Fungsi Website (Firebase, History, dll)
-            // Kita beri delay sedikit agar script lain siap
-            setTimeout(async () => {
-                if(window.updateSidebarWallet) window.updateSidebarWallet(userAddress);
-                if(window.updateModalWalletData) window.updateModalWalletData(userAddress);
-                if(window.loadTokensFromCloud) await window.loadTokensFromCloud(userAddress);
-                if(window.autoScanTokens) window.autoScanTokens();
-                if(window.loadUserHistory) window.loadUserHistory(userAddress);
-            }, 500);
+                // Update Info Modal
+                if(document.getElementById("modalFullAddress")) {
+                    document.getElementById("modalFullAddress").innerText = userAddress;
+                    document.getElementById("modalShortAddress").innerText = userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+                }
 
-        } 
-        // --- KONDISI: TERPUTUS ---
-        else {
-            console.log("❌ AppKit: Belum Terhubung");
-            window.isWalletConnected = false;
-            window.modalUserAddr = null;
-            
-            if(btn) {
-                btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;
-                btn.classList.remove("connected");
+                // Jalankan Fungsi Lain (Firebase dll)
+                setTimeout(async () => {
+                    if(window.updateSidebarWallet) window.updateSidebarWallet(userAddress);
+                    if(window.updateModalWalletData) window.updateModalWalletData(userAddress);
+                    if(window.loadTokensFromCloud) await window.loadTokensFromCloud(userAddress);
+                    if(window.autoScanTokens) window.autoScanTokens();
+                    if(window.loadUserHistory) window.loadUserHistory(userAddress);
+                }, 500);
+
+            } 
+            // --- USER TERPUTUS ---
+            else {
+                window.isWalletConnected = false;
+                window.modalUserAddr = null;
+                if(btn) {
+                    btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;
+                    btn.classList.remove("connected");
+                }
             }
-        }
-    });
+        });
+    }
     </script>
                           
     <script>
