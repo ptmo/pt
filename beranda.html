@@ -2223,101 +2223,36 @@ window.updateLocalTokens = function(cloudData) {
     }
 };
 
-        // --- INIT ---
         window.onload = async () => {
-    // -----------------------------------------------------------
-    // 1. SETUP READ PROVIDER (Untuk User Belum Login)
-    // -----------------------------------------------------------
-    // Provider ini hanya untuk baca data umum (Feed/Kontrak) tanpa login
-    if(typeof initTokenManager === 'function') initTokenManager();
-            
-    const rpc = new ethers.providers.JsonRpcProvider("https://base-rpc.publicnode.com");
-    try {
-        if(typeof CONTRACT_ADDRESS !== 'undefined' && typeof ABI !== 'undefined') {
-            contractReader = new ethers.Contract(CONTRACT_ADDRESS, ABI, rpc);
-        }
-    } catch(e) { console.log("Init contract error:", e); }
-    
-    // -----------------------------------------------------------
-    // 2. LOGIKA AUTO-LOGIN METAMASK
-    // -----------------------------------------------------------
-    if(window.ethereum) {
+        // 1. Setup Read Provider (Untuk baca data tanpa login)
+        if(typeof initTokenManager === 'function') initTokenManager();
+                
+        const rpc = new ethers.providers.JsonRpcProvider(BASE_RPC_URL);
         try {
-            const web3 = new ethers.providers.Web3Provider(window.ethereum);
-            // Cek apakah user pernah connect sebelumnya?
-            const accounts = await web3.listAccounts();
-            
-            if(accounts.length > 0) {
-                const userAddress = accounts[0];
-                console.log("✅ Auto-Login Berhasil:", userAddress);
-                
-                // [CRITICAL] UPDATE VARIABEL GLOBAL
-                // Agar script Firebase & Scan tahu ini wallet siapa
-                modalUserAddr = userAddress; 
-                isWalletConnected = true;
-
-                // A. Update Tampilan Tombol Connect
-                const btn = document.getElementById("btnConnect");
-                if(btn) {
-                    btn.innerHTML = `<i class="fas fa-wallet"></i> Info Profile`;
-                    btn.classList.add("connected");
-                }
-                
-                // B. Update Data Modal (Teks Address)
-                if(document.getElementById("modalFullAddress")) {
-                    document.getElementById("modalFullAddress").innerText = userAddress;
-                    document.getElementById("modalShortAddress").innerText = userAddress.substring(0, 10) + "..." + userAddress.slice(-8);
-                }
-
-                // C. Ambil Saldo Utama (ETH)
-                const balance = await web3.getBalance(userAddress);
-                if(document.getElementById("modalBalance")) {
-                    document.getElementById("modalBalance").innerText = parseFloat(ethers.utils.formatEther(balance)).toFixed(4) + " ETH";
-                }
-
-                // D. Update Fungsi-Fungsi DApp Lainnya
-                if(typeof updateSidebarWallet === 'function') updateSidebarWallet(userAddress);
-                if(typeof updateModalWalletData === 'function') updateModalWalletData(userAddress);
-                
-                // -------------------------------------------------------
-                // [PENAMBAHAN PENTING] LOAD DATA DARI FIREBASE CLOUD
-                // -------------------------------------------------------
-                // Kita panggil ini AGAR TOKEN MUNCUL walau cache dihapus
-                if (window.loadTokensFromCloud) {
-                    await window.loadTokensFromCloud(userAddress);
-                }
-                loadGlobalFeed();
-                loadUserHistory(userAddress);
-
-                // E. Auto Scan Token (Jalan setelah Cloud selesai)
-                // Memberi jeda sedikit agar UI tidak berat
-                setTimeout(() => {
-                    if(typeof autoScanTokens === 'function') autoScanTokens();
-                }, 1000);
+            if(typeof CONTRACT_ADDRESS !== 'undefined' && typeof ABI !== 'undefined') {
+                contractReader = new ethers.Contract(CONTRACT_ADDRESS, ABI, rpc);
             }
-        } catch(e) { console.error("Auto-login error:", e); }
-    }
+        } catch(e) { console.log("Init contract error:", e); }
+        
+        // 2. Load Fitur Umum (Feed, dll)
+        if(typeof loadFeed === 'function') loadFeed();
+        if(typeof initDeepIndexer === 'function') setTimeout(initDeepIndexer, 3000);
+        
+        // 3. Interval Harga
+        setInterval(() => {
+            if (!document.hidden && typeof refreshAllTokenBalances === 'function') {
+                refreshAllTokenBalances();
+            }
+        }, 15000);
 
-    // -----------------------------------------------------------
-    // 3. INISIALISASI FITUR LAIN (Feed, Indexer, Manager)
-    // -----------------------------------------------------------
-    if(typeof loadFeed === 'function') loadFeed();
-    if(typeof initDeepIndexer === 'function') setTimeout(initDeepIndexer, 3000);
-    
-    // -----------------------------------------------------------
-    // 4. INTERVAL UPDATE HARGA REAL-TIME (Looping)
-    // -----------------------------------------------------------
-    setInterval(() => {
-        // Hanya update jika user sedang melihat tab browser (Hemat API)
-        if (!document.hidden) {
-            refreshAllTokenBalances();
-        }
-    }, 15000);
+        setTimeout(() => {
+            if(typeof loadPopularSection === 'function') loadPopularSection();
+        }, 2000);
 
-setTimeout(() => {
-        loadPopularSection();
-    }, 2000);
-};
+        // CATATAN:
+        // Tidak perlu logika "if(window.ethereum) { ... }" disini lagi.
+        // Karena "modal.subscribeState" di script module atas sudah menangani auto-login.
+    };
 
 async function switchNetwork() {
     try {
