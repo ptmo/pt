@@ -1970,24 +1970,29 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
     </script>
 
     <script type="module">
-    // 1. Import Library (Pastikan internet lancar, atau gunakan VPN jika 404)
+    // ==========================================
+    // 1. IMPORT LIBRARY (CDN JSDELIVR - STABIL)
+    // ==========================================
     import { createAppKit } from 'https://cdn.jsdelivr.net/npm/@reown/appkit@1.6.5/+esm';
     import { Ethers5Adapter } from 'https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-ethers5@1.6.5/+esm';
     import { base } from 'https://cdn.jsdelivr.net/npm/@reown/appkit@1.6.5/networks/+esm';
     import { ethers } from 'https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.esm.min.js';
-   
-    // 2. Konfigurasi
+
+    // ==========================================
+    // 2. KONFIGURASI PROYEK
+    // ==========================================
     const projectId = 'f67f439f77eb6398f723672f2daf89c8';
     
     const metadata = {
         name: 'Putramas Social Feed',
-        description: 'Arsip Digital Galeri Wayang Nusantara',
+        description: 'Arsip Digital Galeri Wayang',
         url: 'https://putramas.web.id', 
         icons: ['https://putramas.web.id/img/icon-192.png']
     };
 
-    // 3. Inisialisasi Modal
-    // Kita bungkus try-catch agar jika gagal init, kode bawah tetap jalan
+    // ==========================================
+    // 3. INISIALISASI APPKIT
+    // ==========================================
     let modal;
     try {
         modal = createAppKit({
@@ -2007,74 +2012,79 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
                 '--w3m-border-radius-master': '2px'
             }
         });
+        console.log("✅ AppKit Loaded Successfully");
     } catch (e) {
-        console.error("Gagal Init AppKit (Cek Internet/ID):", e);
+        console.error("❌ AppKit Init Failed:", e);
     }
 
-    // 4. FUNGSI LOGIC CONNECT (Internal)
-    async function handleConnect() {
+    // ==========================================
+    // 4. BRIDGE KE WINDOW (SANGAT PENTING!)
+    // ==========================================
+    // Kita tempel fungsi module ke window agar HTML bisa baca
+    
+    window.appKitModal = modal; // Untuk debug di console
+
+    // Fungsi Connect Global
+    window.connectWallet = async function() {
         const btn = document.getElementById("btnConnect");
         
-        // Cek variable global (apakah sudah connect?)
+        // 1. Cek dulu apakah sudah connect?
         if (window.isWalletConnected) {
-            // Jika sudah connect, buka profil
+            // Kalau sudah, buka modal profil sendiri
             if(typeof window.toggleWalletModal === 'function') {
                 window.toggleWalletModal();
-            } else {
-                console.log("Toggle modal tidak ditemukan, disconnect manual...");
-                if(typeof window.disconnectWallet === 'function') window.disconnectWallet();
             }
             return;
         }
 
-        // Jika belum, Buka AppKit
+        // 2. Kalau belum, buka Modal AppKit
         if (modal) {
             try {
                 if(btn) btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Loading...`;
-                modal.open({ view: 'Connect' });
+                
+                // [FIX GPT POINT 1]: Gunakan opsi view
+                await modal.open({ view: 'Connect' });
+                
             } catch (error) {
-                console.error("Modal error:", error);
+                console.error("User menutup modal:", error);
+                // Kembalikan tombol jika batal
                 if(btn) btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;
             }
-        } else {
-            alert("Sistem Wallet gagal dimuat. Coba refresh.");
         }
-    }
+    };
 
-    // 5. Expose fungsi ke Window (Untuk keperluan script lain jika butuh)
-    window.connectWallet = handleConnect;
-
+    // Fungsi Disconnect Global
     window.disconnectWallet = async function() {
         try { if(modal) await modal.disconnect(); } catch(e) {}
+        
         localStorage.removeItem("walletConnected");
         window.isWalletConnected = false;
+        window.modalUserAddr = null;
+        window.signer = null;
+        
         window.location.reload();
     };
 
-    // 6. EVENT LISTENER (PENGGANTI ONCLICK)
-    // Ini menjamin fungsi hanya dipanggil setelah script siap
-    const btn = document.getElementById("btnConnect");
-    if (btn) {
-        btn.addEventListener("click", handleConnect);
-        console.log("✅ Tombol Connect Siap!");
-    }
-
-    // 7. MONITOR STATUS KONEKSI
+    // ==========================================
+    // 5. EVENT LISTENER (JANTUNG KONEKSI)
+    // ==========================================
     if (modal) {
         modal.subscribeState(async (state) => {
             const btn = document.getElementById("btnConnect");
+            const isConnected = state.selectedNetworkId && state.address;
 
-            // --- USER TERKONEKSI ---
-            if (state.selectedNetworkId && state.address) {
-                console.log("✅ AppKit Terhubung:", state.address);
+            // --- JIKA TERKONEKSI ---
+            if (isConnected) {
+                console.log("🔗 WALLET CONNECTED:", state.address);
                 const userAddress = state.address;
                 
-                // Update State Global
+                // A. Update Variable Global
                 window.modalUserAddr = userAddress;
                 window.isWalletConnected = true;
 
-                // Setup Provider
-                const walletProvider = modal.getProvider();
+                // [FIX GPT POINT 3]: Ambil Provider dari AppKit, JANGAN window.ethereum
+                const walletProvider = modal.getProvider(); 
+                
                 if (walletProvider) {
                     const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
                     window.signer = ethersProvider.getSigner();
@@ -2088,19 +2098,22 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
                     } catch(e) {}
                 }
 
-                // Update Tampilan Tombol
+                // B. Update UI Tombol
                 if(btn) {
                     btn.innerHTML = `<i class="fas fa-wallet"></i> Info Profile`;
                     btn.classList.add("connected");
+                    // Override onclick biar buka profil
+                    btn.onclick = window.connectWallet; 
                 }
 
-                // Update Info Modal
+                // C. Update Info Modal
                 if(document.getElementById("modalFullAddress")) {
                     document.getElementById("modalFullAddress").innerText = userAddress;
                     document.getElementById("modalShortAddress").innerText = userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
                 }
 
-                // Jalankan Fungsi Lain (Firebase dll)
+                // D. Jalankan Fungsi Lain (Firebase, Feed, dll)
+                // Kita kasih delay biar script main.js siap dulu
                 setTimeout(async () => {
                     if(window.updateSidebarWallet) window.updateSidebarWallet(userAddress);
                     if(window.updateModalWalletData) window.updateModalWalletData(userAddress);
@@ -2110,7 +2123,7 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
                 }, 500);
 
             } 
-            // --- USER TERPUTUS ---
+            // --- JIKA TERPUTUS ---
             else {
                 window.isWalletConnected = false;
                 window.modalUserAddr = null;
@@ -2121,6 +2134,20 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
             }
         });
     }
+
+    // ==========================================
+    // 6. BINDING TOMBOL (DOM READY)
+    // ==========================================
+    // [FIX GPT POINT 4]: Pastikan tombol ada sebelum dipasang event
+    window.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("btnConnect");
+        if (btn) {
+            // Hapus onclick lama (jika ada) dan pasang yang baru
+            btn.onclick = window.connectWallet;
+            console.log("✅ Tombol Connect Siap (DOM Loaded)");
+        }
+    });
+
     </script>
                           
     <script>
