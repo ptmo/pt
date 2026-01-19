@@ -2031,7 +2031,7 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
         if (modal) {
             try {
                 if(btn) btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Loading...`;
-                await modal.open();
+                modal.open({ view: 'Connect' });
             } catch (error) {
                 console.error("Modal error:", error);
                 if(btn) btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;
@@ -2295,10 +2295,11 @@ window.updateLocalTokens = function(cloudData) {
 async function switchNetwork() {
     try {
         // Coba perintah ganti network
-        await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: CHAIN_ID_BASE }],
-        });
+        const provider = modal.getProvider();
+await provider.request({
+  method: 'wallet_switchEthereumChain',
+  params: [{ chainId: '0x2105' }]
+});
     } catch (switchError) {
         // Kode 4902 artinya Network Belum Ada di Metamask User
         if (switchError.code === 4902) {
