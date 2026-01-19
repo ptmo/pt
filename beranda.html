@@ -1282,14 +1282,32 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
 
 .fire-text { color: #e74c3c; font-weight: bold; }
 
-        w3m-modal {
-    z-index: 100000 !important;
-    position: relative; /* Memastikan z-index bekerja */
-        }
+        /* Styling Khusus Modal Web3Modal */
+w3m-modal {
+    /* 1. Layer Paling Atas */
+    z-index: 100000 !important; 
 
-        w3m-modal::part(modal) {
-    margin-bottom: 100px; 
-        }
+    /* 2. Posisi Mengambang (Fixed) */
+    position: fixed !important; 
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: auto !important; /* Lepaskan jangkar bawah */
+    height: 100vh !important; /* Penuhi tinggi layar */
+    width: 100vw !important;
+
+    /* 3. Trik Memindahkan Konten ke Atas */
+    display: flex !important;
+    align-items: flex-start !important; /* KUNCI: Pindah dari 'flex-end' (bawah) ke 'flex-start' (atas) */
+    justify-content: center !important;
+    
+    /* 4. Jarak Aman (Agar tidak ketabrak Poni/Notch HP) */
+    padding-top: 60px !important; 
+    
+    /* 5. Pastikan background overlay tetap gelap penuh */
+    background: rgba(0, 0, 0, 0.5); /* Opsional: Jika overlay bawaan kurang gelap */
+}
+
     </style>
 </head>
 <body>
