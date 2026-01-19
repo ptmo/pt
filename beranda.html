@@ -1970,13 +1970,12 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
     </script>
 
     <script type="module">
-    // 1. IMPORT LIBRARY STABIL (Web3Modal v4.0.13)
-    // Kita gunakan versi ini karena CDN-nya sangat stabil
-    import { createWeb3Modal, defaultConfig } from 'https://esm.sh/@web3modal/ethers5@4.0.13';
+    // 1. IMPORT LIBRARY (Update ke v4.1.11 - Versi Terakhir v4 Paling Stabil)
+    import { createWeb3Modal, defaultConfig } from 'https://esm.sh/@web3modal/ethers5@4.1.11';
     import { ethers } from 'https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.esm.min.js';
 
     // 2. KONFIGURASI
-    const projectId = 'f67f439f77eb6398f723672f2daf89c8'; // Project ID Anda (Tetap Sama)
+    const projectId = 'f67f439f77eb6398f723672f2daf89c8'; 
 
     const metadata = {
         name: 'Putramas Social',
@@ -2001,28 +2000,29 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
             chains: [mainnet],
             projectId,
             enableAnalytics: true,
+            
+            // --- [FITUR SOSIAL AKTIF DISINI] ---
+            enableEmail: true, // Ini akan memunculkan Tab Email & Sosial
+            // -----------------------------------
+            
             themeMode: 'light',
             themeVariables: {
                 '--w3m-accent': '#7385a5',
                 '--w3m-border-radius-master': '2px'
             }
         });
-        console.log("✅ Web3Modal Stabil Siap!");
+        console.log("✅ Web3Modal v4.1.11 Siap + Social Login!");
     } catch (e) {
         console.error("Gagal Init Modal:", e);
     }
 
-    // 4. LOGIKA KONEKSI (Global Function)
+    // 4. LOGIKA KONEKSI (Sama seperti sebelumnya)
     window.connectWallet = async function() {
         const btn = document.getElementById("btnConnect");
-        
-        // Cek jika sudah connect
         if (window.isWalletConnected) {
             if(typeof window.toggleWalletModal === 'function') window.toggleWalletModal();
             return;
         }
-
-        // Buka Modal
         if (modal) {
             try {
                 if(btn) btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Loading...`;
@@ -2041,29 +2041,26 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
         window.location.reload();
     };
 
-    // 5. PASANG LISTENER KE TOMBOL (Wajib!)
-    // Kita pasang event listener agar tombol berfungsi tanpa 'onclick' di HTML
+    // 5. LISTENER TOMBOL
     const btn = document.getElementById("btnConnect");
     if (btn) {
         btn.addEventListener("click", window.connectWallet);
-        console.log("✅ Tombol Connect sudah aktif.");
     }
 
-    // 6. MONITOR STATUS KONEKSI
+    // 6. MONITOR STATUS
     if (modal) {
-        // Web3Modal v4 menggunakan subscribeProvider untuk mendeteksi perubahan
         modal.subscribeProvider(async ({ provider, address, isConnected }) => {
             const btn = document.getElementById("btnConnect");
 
             if (isConnected && address) {
                 console.log("🔗 Terhubung:", address);
                 const userAddress = address;
-
+                
                 // Set Global Var
                 window.modalUserAddr = userAddress;
                 window.isWalletConnected = true;
 
-                // Setup Ethers Provider untuk Transaksi
+                // Setup Provider
                 if (provider) {
                     const web3Provider = new ethers.providers.Web3Provider(provider);
                     window.signer = web3Provider.getSigner();
@@ -2077,19 +2074,17 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
                     } catch(e) {}
                 }
 
-                // Update UI Tombol
+                // Update UI
                 if(btn) {
                     btn.innerHTML = `<i class="fas fa-wallet"></i> Info Profile`;
                     btn.classList.add("connected");
                 }
-
-                // Update Info di Modal Profil
                 if(document.getElementById("modalFullAddress")) {
                     document.getElementById("modalFullAddress").innerText = userAddress;
                     document.getElementById("modalShortAddress").innerText = userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
                 }
 
-                // Jalankan fungsi lain (delay sedikit agar aman)
+                // Load Data Lain
                 setTimeout(() => {
                     if(window.updateSidebarWallet) window.updateSidebarWallet(userAddress);
                     if(window.updateModalWalletData) window.updateModalWalletData(userAddress);
@@ -2099,8 +2094,6 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
                 }, 500);
 
             } else {
-                // Saat Disconnect
-                console.log("❌ Terputus");
                 window.isWalletConnected = false;
                 window.modalUserAddr = null;
                 if(btn) {
@@ -2110,8 +2103,6 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
             }
         });
     }
-    </script>
-
     </script>
                           
     <script>
