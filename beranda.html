@@ -2132,6 +2132,47 @@ w3m-modal {
         });  
     }  
     </script>
+
+    <script>
+    // --- FORCE MODAL TO TOP (SHADOW DOM INJECTOR) ---
+    // Script ini memaksa modal Web3Modal pindah ke atas di HP
+    
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node.tagName === 'W3M-MODAL') {
+                    // Saat modal muncul, kita suntik CSS ke dalamnya
+                    const interval = setInterval(() => {
+                        if (node.shadowRoot) {
+                            clearInterval(interval); // Stop jika shadowRoot sudah siap
+                            
+                            const style = document.createElement('style');
+                            style.textContent = `
+                                /* Target Wrapper Dalam */
+                                .w3m-overlay, [data-testid="w3m-modal-overlay"] {
+                                    align-items: flex-start !important; /* Paksa ke Atas */
+                                    padding-top: 20px !important;       /* Jarak dari Poni HP */
+                                }
+                                
+                                /* Target Kartu Putih */
+                                wui-card, .wui-card {
+                                    margin-bottom: auto !important; /* Dorong ke atas */
+                                    border-bottom-left-radius: 20px !important; /* Haluskan sudut bawah */
+                                    border-bottom-right-radius: 20px !important;
+                                }
+                            `;
+                            node.shadowRoot.appendChild(style);
+                            console.log("✅ Posisi Modal berhasil dipaksa ke ATAS!");
+                        }
+                    }, 50); // Cek setiap 50ms sampai shadowRoot siap
+                }
+            });
+        });
+    });
+
+    // Mulai memantau body HTML
+    observer.observe(document.body, { childList: true, subtree: true });
+    </script>
                           
     <script>
         
