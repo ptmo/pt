@@ -1969,79 +1969,141 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
   console.log("🔥 Firebase Siap!");
     </script>
 
-    <script type="module">
-import { createAppKit } from 'https://cdn.jsdelivr.net/npm/@reown/appkit@1.6.5/+esm'
-import { Ethers5Adapter } from 'https://cdn.jsdelivr.net/npm/@reown/appkit-adapter-ethers5@1.6.5/+esm'
-import { base } from 'https://cdn.jsdelivr.net/npm/@reown/appkit@1.6.5/networks/+esm'
-import { ethers } from 'https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.esm.min.js'
-
-const projectId = 'f67f439f77eb6398f723672f2daf89c8'
-
-const metadata = {
-  name: 'Putramas Social',
-  description: 'Arsip Digital Galeri Wayang Nusantara',
-  url: 'https://putramas.web.id',
-  icons: ['https://putramas.web.id/img/icon-192.png']
-}
-
-const modal = createAppKit({
-  adapters: [new Ethers5Adapter()],
-  networks: [base],
-  projectId,
-  metadata,
-
-  features: {
-    analytics: true,
-    email: true,
-    socials: ['google', 'facebook', 'apple', 'x', 'discord', 'github'],
-    emailShowWallets: true
-  },
-
-  themeMode: 'light',
-  themeVariables: {
-    '--w3m-accent': '#7385a5',
-    '--w3m-border-radius-master': '2px'
-  }
-})
-
-console.log('✅ AppKit + Social Login Ready')
-
-/* ===== BUTTON ===== */
-function handleConnect() {
-  modal.open({ view: 'Connect' })
-}
-
-document.getElementById('btnConnect')?.addEventListener('click', handleConnect)
-
-/* ===== STATE MONITOR ===== */
-modal.subscribeState(async (state) => {
-  const btn = document.getElementById("btnConnect")
-
-  if (state.address) {
-    const addr = state.address
-    console.log('🔗 Connected:', addr)
-
-    window.modalUserAddr = addr
-    window.isWalletConnected = true
-
-    const provider = modal.getProvider()
-    const ethersProvider = new ethers.providers.Web3Provider(provider)
-    window.signer = ethersProvider.getSigner()
-
-    if(btn){
-      btn.innerHTML = `<i class="fas fa-wallet"></i> Info Profile`
-      btn.classList.add("connected")
-    }
-
-  } else {
-    window.isWalletConnected = false
-    window.modalUserAddr = null
-    if(btn){
-      btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`
-      btn.classList.remove("connected")
-    }
-  }
-})
+    <script type="module">  
+    // 1. IMPORT LIBRARY (Update ke v4.1.11 - Versi Terakhir v4 Paling Stabil)  
+    import { createWeb3Modal, defaultConfig } from 'https://esm.sh/@web3modal/ethers5@5.1.11';  
+    import { ethers } from 'https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.esm.min.js';  
+  
+    // 2. KONFIGURASI  
+    const projectId = 'f67f439f77eb6398f723672f2daf89c8';   
+  
+    const metadata = {  
+        name: 'Putramas Social',  
+        description: 'Arsip Digital Galeri Wayang',  
+        url: 'https://putramas.web.id',  
+        icons: ['https://putramas.web.id/img/icon-192.png']  
+    };  
+  
+    const mainnet = {  
+        chainId: 8453,  
+        name: 'Base',  
+        currency: 'ETH',  
+        explorerUrl: 'https://basescan.org',  
+        rpcUrl: 'https://mainnet.base.org'  
+    };  
+  
+    // 3. INISIALISASI MODAL  
+    let modal;  
+    try {  
+        modal = createWeb3Modal({  
+            ethersConfig: defaultConfig({ metadata }),  
+            chains: [mainnet],  
+            projectId,  
+            enableAnalytics: true,  
+              
+            // --- [FITUR SOSIAL AKTIF DISINI] ---  
+            email: true,  
+                socials: ['google', 'x', 'discord', 'facebook', 'apple', 'github', 'farcaster'],  
+                emailShowWallets: true,  
+              
+            themeMode: 'light',  
+            themeVariables: {  
+                '--w3m-accent': '#7385a5',  
+                '--w3m-border-radius-master': '2px'  
+            }  
+        });  
+        console.log("✅ Web3Modal v4.1.11 Siap + Social Login!");  
+    } catch (e) {  
+        console.error("Gagal Init Modal:", e);  
+    }  
+  
+    // 4. LOGIKA KONEKSI (Sama seperti sebelumnya)  
+    window.connectWallet = async function() {  
+        const btn = document.getElementById("btnConnect");  
+        if (window.isWalletConnected) {  
+            if(typeof window.toggleWalletModal === 'function') window.toggleWalletModal();  
+            return;  
+        }  
+        if (modal) {  
+            try {  
+                if(btn) btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Loading...`;  
+                await modal.open();   
+            } catch (err) {  
+                console.error("Modal closed/error:", err);  
+                if(btn) btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;  
+            }  
+        }  
+    };  
+  
+    window.disconnectWallet = async function() {  
+        try { await modal.disconnect(); } catch(e) {}  
+        localStorage.removeItem("walletConnected");  
+        window.isWalletConnected = false;  
+        window.location.reload();  
+    };  
+  
+    // 5. LISTENER TOMBOL  
+    const btn = document.getElementById("btnConnect");  
+    if (btn) {  
+        btn.addEventListener("click", window.connectWallet);  
+    }  
+  
+    // 6. MONITOR STATUS  
+    if (modal) {  
+        modal.subscribeProvider(async ({ provider, address, isConnected }) => {  
+            const btn = document.getElementById("btnConnect");  
+  
+            if (isConnected && address) {  
+                console.log("🔗 Terhubung:", address);  
+                const userAddress = address;  
+                  
+                // Set Global Var  
+                window.modalUserAddr = userAddress;  
+                window.isWalletConnected = true;  
+  
+                // Setup Provider  
+                if (provider) {  
+                    const web3Provider = new ethers.providers.Web3Provider(provider);  
+                    window.signer = web3Provider.getSigner();  
+                      
+                    // Ambil Saldo  
+                    try {  
+                        const balance = await web3Provider.getBalance(userAddress);  
+                        const ethVal = parseFloat(ethers.utils.formatEther(balance)).toFixed(4);  
+                        const balEl = document.getElementById("modalBalance");  
+                        if(balEl) balEl.innerText = ethVal + " ETH";  
+                    } catch(e) {}  
+                }  
+  
+                // Update UI  
+                if(btn) {  
+                    btn.innerHTML = `<i class="fas fa-wallet"></i> Info Profile`;  
+                    btn.classList.add("connected");  
+                }  
+                if(document.getElementById("modalFullAddress")) {  
+                    document.getElementById("modalFullAddress").innerText = userAddress;  
+                    document.getElementById("modalShortAddress").innerText = userAddress.substring(0, 6) + "..." + userAddress.slice(-4);  
+                }  
+  
+                // Load Data Lain  
+                setTimeout(() => {  
+                    if(window.updateSidebarWallet) window.updateSidebarWallet(userAddress);  
+                    if(window.updateModalWalletData) window.updateModalWalletData(userAddress);  
+                    if(window.loadTokensFromCloud) window.loadTokensFromCloud(userAddress);  
+                    if(window.autoScanTokens) window.autoScanTokens();  
+                    if(window.loadUserHistory) window.loadUserHistory(userAddress);  
+                }, 500);  
+  
+            } else {  
+                window.isWalletConnected = false;  
+                window.modalUserAddr = null;  
+                if(btn) {  
+                    btn.innerHTML = `<i class="fas fa-wallet"></i> Hubungkan`;  
+                    btn.classList.remove("connected");  
+                }  
+            }  
+        });  
+    }  
     </script>
                           
     <script>
