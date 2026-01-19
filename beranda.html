@@ -1281,6 +1281,11 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
 }
 
 .fire-text { color: #e74c3c; font-weight: bold; }
+
+        w3m-modal {
+    z-index: 100000 !important;
+    position: relative; /* Memastikan z-index bekerja */
+        }
     </style>
 </head>
 <body>
@@ -2010,7 +2015,6 @@ textarea { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius:
             themeVariables: {  
                 '--w3m-accent': '#7385a5',  
                 '--w3m-border-radius-master': '2px'
-                '--w3m-z-index': '100000'
             }  
         });  
         console.log("✅ Web3Modal v4.1.11 Siap + Social Login!");  
