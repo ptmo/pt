@@ -289,23 +289,23 @@ Koleksi Wayang Kulit
 #toast {
     visibility: hidden;
     min-width: 300px;
-    max-width: 90vw; /* Responsif di HP */
-    background: rgba(255, 255, 255, 0.5); /* Putih semi-transparan */
-    backdrop-filter: blur(12px); /* Efek Blur Kaca */
+    max-width: 90vw;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: #334155; /* Warna text abu tua (Soft) */
+    color: #334155;
     text-align: left;
-    border-radius: 16px; /* Sudut membulat */
+    border-radius: 16px;
     padding: 12px 18px;
     position: fixed;
     z-index: 99999;
     left: 50%;
     top: 30px;
-    transform: translateX(-50%) translateY(-20px); /* Posisi awal slide */
+    transform: translateX(-50%) translateY(-20px);
     box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.08), /* Bayangan lembut */
+        0 10px 30px rgba(0, 0, 0, 0.08),
         0 4px 6px rgba(0, 0, 0, 0.02),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.5); /* Border tipis kaca */
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -313,17 +313,15 @@ Koleksi Wayang Kulit
     font-size: 10px;
     font-weight: 700;
     opacity: 0;
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efek membal (Bouncy) */
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* --- STATE: SHOW --- */
 #toast.show {
     visibility: visible;
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
 
-/* --- ICON BOX --- */
 .toast-icon-box {
     width: 30px;
     height: 30px;
@@ -332,10 +330,9 @@ Koleksi Wayang Kulit
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 14px;
+    font-size: 15px;
 }
 
-/* --- CLOSE BUTTON --- */
 .toast-close {
     cursor: pointer;
     color: #7385a5;
@@ -348,9 +345,6 @@ Koleksi Wayang Kulit
     transform: scale(1.1);
 }
 
-/* --- WARNA TEMA BERDASARKAN TIPE (Soft Colors) --- */
-
-/* 1. SUCCESS (Hijau Mint) */
 #toast.success .toast-icon-box {
     background: #cdeae1;
     color: #059669;
@@ -358,7 +352,6 @@ Koleksi Wayang Kulit
 }
 #toast.success { border: 1px solid #059669; }
 
-/* 2. ERROR (Merah Rose) */
 #toast.error .toast-icon-box {
     background: #f9d2da;
     color: #e11d48;
@@ -366,7 +359,6 @@ Koleksi Wayang Kulit
 }
 #toast.error { border: 1px solid #e11d48; }
 
-/* 3. INFO (Biru Langit) */
 #toast.info .toast-icon-box {
     background: #cce6f4;
     color: #0284c7;
@@ -374,7 +366,6 @@ Koleksi Wayang Kulit
 }
 #toast.info { border: 1px solid #0284c7; }
 
-/* 4. WARNING (Kuning Amber) */
 #toast.warning .toast-icon-box {
     background: #f7e4cd;
     color: #d97706;
@@ -382,7 +373,6 @@ Koleksi Wayang Kulit
 }
 #toast.warning { border: 1px solid #d97706; }
 
-/* 5. LOADING (Abu Netral) */
 #toast.loading .toast-icon-box {
     background: #d5dae4;
     color: #7385a5;
@@ -390,10 +380,9 @@ Koleksi Wayang Kulit
 }
 #toast.loading { border: 1px solid #7385a5; }
 
-/* 6. WOLF / METAMASK (Orange Fox) */
 #toast.wolf .toast-icon-box {
-    background: #fbdece; /* Orange muda */
-    color: #ea580c;      /* Orange Metamask */
+    background: #fbdece;
+    color: #ea580c;
     border: 1px solid #ea580c;
 }
 #toast.wolf { 
@@ -2823,24 +2812,18 @@ async function updateSawerCount(ownerAddress) {
 
 function showToast(msg, type = 'info') {
     const x = document.getElementById("toast");
-
-    // Mapping Tipe ke Class Font Awesome
     const iconMap = {
         info:    'fa-info',
         success: 'fa-check',
         error:   'fa-times',
         warning: 'fa-exclamation-triangle',
-        wolf:    'fa-shield-dog', // Icon Wolf/Fox untuk Metamask
-        loading: 'fa-circle-notch fa-spin' // Icon berputar
+        wolf:    'fa-shield-dog',
+        loading: 'fa-circle-notch fa-spin'
     };
 
-    // Fallback jika tipe tidak dikenal, pakai 'load' atau 'loading'
     if (type === 'load') type = 'loading';
-    
-    // Ambil class icon, default ke info jika error
     const iconClass = iconMap[type] || iconMap.info;
 
-    // Render HTML Baru (Tanpa tag <img> lagi)
     x.innerHTML = `
         <div class="toast-icon-box">
             <i class="fas ${iconClass}"></i>
@@ -2848,27 +2831,19 @@ function showToast(msg, type = 'info') {
         <div style="flex:1; padding:0 5px; line-height:1.4;">${msg}</div>
         <i class="fas fa-times toast-close" onclick="hideToast()"></i>
     `;
-
-    // Reset Class & Trigger Reflow
     x.className = ''; 
-    // Trik "void" untuk mereset animasi CSS supaya bisa dipanggil berulang kali
     void x.offsetWidth; 
-    
-    // Tambahkan class tipe (untuk warna) dan class show (untuk animasi masuk)
     x.className = `${type} show`;
 
-    // Reset Timer
     if (toastTimeout) clearTimeout(toastTimeout);
     
-    // Auto close (Kecuali loading, biar user yang nunggu proses selesai)
     if (type !== 'loading') {
         toastTimeout = setTimeout(() => { 
             hideToast();
-        }, 5000); // 5 Detik cukup untuk toast bacaan
+        }, 7000);
     }
 }
 
-// Fungsi Helper untuk menutup toast
 function hideToast() {
     const x = document.getElementById("toast");
     x.classList.remove("show");
